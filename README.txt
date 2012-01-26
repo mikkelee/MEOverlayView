@@ -9,10 +9,10 @@ Build & run MEOverlayView.app for an example of the functionality.
 All coordinates are in the image's coordinates.
 
 TODO:
-- most important: figure out a good place to put -setupOverlays and don't call it so much, have it be part of the normal life of the view.
+- get a clearer idea of when it's a good idea to -refreshOverlays
 - rework the event sending code (only send actions -- wantsOverlayActions, doubleClick, singleClick?)
 - get better trackingareas (ie only show hand when over an overlay?)
-- make moving less finicky when allowsOverlappingOverlays == NO
+- make creating/modifying less finicky when allowsOverlappingOverlays == NO
 - resizing with corner handles 
 
 
