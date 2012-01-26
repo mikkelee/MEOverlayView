@@ -35,10 +35,15 @@
     MEState state;
     CALayer *topLayer;
     
-    //defaults
-    CGColorRef backgroundColor;
-    CGColorRef borderColor;
-    CGFloat borderWidth;
+    //properties
+    CGColorRef __backgroundColor;
+    CGColorRef __borderColor;
+    CGFloat __borderWidth;
+    BOOL __allowsCreatingOverlays;
+    BOOL __allowsModifyingOverlays;
+    BOOL __allowsDeletingOverlays;
+    BOOL __allowsOverlappingOverlays;
+    BOOL __wantsOverlayActions;
     
     //events
     NSPoint mouseDownPoint;
@@ -60,6 +65,16 @@
 
     state = MEIdleState;
     
+    //default property values:
+    __backgroundColor = CGColorCreateGenericRGB(0, 0, 1, 0.5);
+    __borderColor = CGColorCreateGenericRGB(0, 0, 1, 1);
+    __borderWidth = 3.0f;
+    __allowsCreatingOverlays = YES;
+    __allowsModifyingOverlays = YES;
+    __allowsDeletingOverlays = YES;
+    __allowsOverlappingOverlays = NO;
+    __wantsOverlayActions = YES;
+    
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
     
     NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSMakeRect(0, 0, 0, 0) options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
@@ -68,24 +83,6 @@
 
 - (void)initialSetup
 {
-    if ([__delegate respondsToSelector:@selector(overlayBackgroundColor)]) {
-        backgroundColor = [__delegate overlayBackgroundColor];
-    } else {
-        backgroundColor = CGColorCreateGenericRGB(0, 0, 1, 0.5);
-    }
-    
-    if ([__delegate respondsToSelector:@selector(overlayBorderColor)]) {
-        borderColor = [__delegate overlayBorderColor];
-    } else {
-        borderColor = CGColorCreateGenericRGB(0, 0, 1, 1);
-    }
-    
-    if ([__delegate respondsToSelector:@selector(overlayBorderWidth)]) {
-        borderWidth = [__delegate overlayBorderWidth];
-    } else {
-        borderWidth = 3.0f;
-    }
-    
     topLayer = [CALayer layer];
     
     [topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
@@ -136,6 +133,7 @@
 
 - (void)enterState:(MEState)_state
 {
+    //check for allowances...
     DLog(@"%lu => %lu", state, _state);
     state = _state;
 }
@@ -186,10 +184,10 @@
     
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
-    if (state == MEDeletingState && [__delegate allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
+    if (state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         [__delegate didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
         [self refreshOverlays];
-    } else if (state == MEIdleState && [__delegate wantsOverlayActions] && [hitLayer valueForKey:@"MEOverlayObject"]) {
+    } else if (state == MEIdleState && [self wantsOverlayActions] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([theEvent clickCount] == 1) {
             [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
         } else if ([theEvent clickCount] == 2) {
@@ -234,9 +232,9 @@
     [layer setFrame:rect];
     //[layer setAnchorPoint:CGPointMake(0.0f, 0.0f)];
     
-    [layer setBackgroundColor:backgroundColor];
-    [layer setBorderWidth:borderWidth];
-    [layer setBorderColor:borderColor];
+    [layer setBackgroundColor:__backgroundColor];
+    [layer setBorderWidth:__borderWidth];
+    [layer setBorderColor:__borderColor];
     
     return layer;
 }
@@ -263,7 +261,7 @@
         return NO;
     }
     
-    if (![__delegate allowsOverlappingOverlays]) {
+    if (![self allowsOverlappingOverlays]) {
         for (CALayer *layer in [topLayer sublayers]) {
             if (layer == _layer) {
                 continue; //don't compare against oneself
@@ -283,7 +281,7 @@
 {
     DLog(@"from %@ to %@", NSStringFromPoint(startPoint), NSStringFromPoint(endPoint));
     
-    if (state == MECreatingState && [__delegate allowsCreatingOverlays]) {
+    if (state == MECreatingState && [self allowsCreatingOverlays]) {
         DLog(@"creating");
         if (creatingLayer == nil) {
             creatingLayer = [self layerWithRect:NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f)];
@@ -313,7 +311,7 @@
             creatingLayer = nil;
             [self refreshOverlays];
         }
-    } else if (state == MEModifyingState && [__delegate allowsModifyingOverlays]) {
+    } else if (state == MEModifyingState && [self allowsModifyingOverlays]) {
         DLog(@"modifying");
         if (draggingLayer == nil) {
             CALayer *hitLayer = [self layerAtPoint:mouseDownPoint];
@@ -364,5 +362,15 @@
 #pragma mark Properties
 
 @synthesize overlayDelegate = __delegate;
+
+@synthesize overlayBackgroundColor;
+@synthesize overlayBorderColor;
+@synthesize overlayBorderWidth;
+
+@synthesize allowsCreatingOverlays = __allowsCreatingOverlays;
+@synthesize allowsModifyingOverlays = __allowsModifyingOverlays;
+@synthesize allowsDeletingOverlays = __allowsDeletingOverlays;
+@synthesize allowsOverlappingOverlays = __allowsOverlappingOverlays;
+@synthesize wantsOverlayActions = __wantsOverlayActions;
 
 @end

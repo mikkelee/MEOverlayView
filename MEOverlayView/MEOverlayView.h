@@ -26,21 +26,10 @@
 
 @interface NSObject (MEOverlayViewDelegate)
 
-//Will default to blue, with an alpha of 0.5 for the background & 1.0 for the border, which is 3 pts wide.
-- (CGColorRef)overlayBackgroundColor;
-- (CGColorRef)overlayBorderColor;
-- (CGFloat)overlayBorderWidth;
-
-- (BOOL)allowsCreatingOverlays;
-- (BOOL)allowsModifyingOverlays;
-- (BOOL)allowsDeletingOverlays;
-- (BOOL)allowsOverlappingOverlays; //note: A bit finicky, if the mouse moves "fast", it stops well before overlapping.
-
 - (void)didCreateOverlay:(NSRect)rect;
 - (void)didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
 - (void)didDeleteOverlay:(id)overlayObject;
 
-- (BOOL)wantsOverlayActions;
 - (void)overlay:(id)overlayObject singleClicked:(NSEvent *)event;
 - (void)overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
 
@@ -60,5 +49,15 @@ typedef NSUInteger MEState;
 - (void)enterState:(MEState)_state;
 
 @property (weak) IBOutlet id overlayDelegate;
+
+@property CGColorRef overlayBackgroundColor; //default: blue, alpha 0.5
+@property CGColorRef overlayBorderColor; //default: blue, alpha 1.0
+@property CGFloat overlayBorderWidth; //default 3.0f
+
+@property BOOL allowsCreatingOverlays;
+@property BOOL allowsModifyingOverlays;
+@property BOOL allowsDeletingOverlays;
+@property BOOL allowsOverlappingOverlays; //note: A bit finicky, if the mouse moves "fast", it stops well before overlapping.
+@property BOOL wantsOverlayActions;
 
 @end

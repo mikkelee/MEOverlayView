@@ -30,6 +30,16 @@
         NSLog(@"Created rects: %@", overlays);
     }
     
+    //these are the same as the defaults, just to show how it can be done:
+    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
+    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
+    [overlayView setOverlayBorderWidth:3.0f];
+    [overlayView setAllowsCreatingOverlays:YES];
+    [overlayView setAllowsModifyingOverlays:YES];
+    [overlayView setAllowsDeletingOverlays:YES];
+    [overlayView setAllowsOverlappingOverlays:NO];
+    [overlayView setWantsOverlayActions:YES];
+    
     //to check if viewWillDraw refreshes the overlays properly:
     [overlays performSelector:@selector(addObject:) 
                 withObject:[NSValue valueWithRect:NSMakeRect(20.0f, 20.0f, 540.0f, 20.0f)] 
@@ -46,39 +56,6 @@
 - (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num
 {
     return [overlays objectAtIndex:num];
-}
-
-- (CGColorRef)overlayBackgroundColor
-{
-    return CGColorCreateGenericRGB(0, 0, 1, 0.5);
-}
-- (CGColorRef)overlayBorderColor
-{
-    return CGColorCreateGenericRGB(0, 0, 1, 1);
-}
-- (CGFloat)overlayBorderWidth
-{
-    return 3.0f;
-}
-
-- (BOOL)allowsCreatingOverlays
-{
-    return YES;
-}
-
-- (BOOL)allowsModifyingOverlays
-{
-    return YES;
-}
-
-- (BOOL)allowsDeletingOverlays
-{
-    return YES;
-}
-
-- (BOOL)allowsOverlappingOverlays
-{
-    return NO;
 }
 
 - (void)didCreateOverlay:(NSRect)rect
@@ -113,11 +90,6 @@
      Do whatever else you feel like here... 
      Naturally you can run some extra logic and decide not to delete the object if you want/need to.
      */
-}
-
-- (BOOL)wantsOverlayActions
-{
-    return YES;
 }
 
 - (void)overlay:(id)overlayObject singleClicked:(NSEvent *)event
