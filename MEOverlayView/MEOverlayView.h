@@ -10,6 +10,9 @@
 
 @class MEOverlayView;
 
+#pragma mark -
+#pragma mark Overlay Data Source
+
 @interface NSObject (MEOverlayViewDataSource)
 
 - (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
@@ -17,6 +20,9 @@
 //overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
 
 @end
+
+#pragma mark -
+#pragma mark Overlay Delegate
 
 @interface NSObject (MEOverlayViewDelegate)
 
@@ -28,6 +34,9 @@
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
 
 @end
+
+#pragma mark -
+#pragma mark Overlay View
 
 enum {
     MEIdleState,

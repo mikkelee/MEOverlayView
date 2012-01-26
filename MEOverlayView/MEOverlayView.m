@@ -14,6 +14,9 @@
 
 #import "MEOverlayView.h"
 
+#pragma mark -
+#pragma mark Helper class extension
+
 @interface MEOverlayView ()
 
 //initialization
@@ -21,13 +24,18 @@
 - (void)refreshOverlays;
 
 //helpers
+- (void)setMouseForPoint:(NSPoint)point;
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
+- (CGPathRef)rectPathWithSize:(NSSize)size withHandles:(BOOL)handles;
 - (CAShapeLayer *)layerWithRect:(NSRect)rect withHandles:(BOOL)handles;
 - (CALayer *)layerAtPoint:(NSPoint)point;
 - (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
 
 @end
+
+#pragma mark -
+#pragma mark Implementation
 
 @implementation MEOverlayView {
     __weak id __delegate;
@@ -77,9 +85,6 @@
     __wantsOverlayActions = YES;
     
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
-    
-    NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSMakeRect(0, 0, 0, 0) options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
-    [self addTrackingArea:fullArea];
 }
 
 - (void)initialSetup
@@ -90,6 +95,12 @@
     [topLayer setName:@"topLayer"];
     
     [self refreshOverlays];
+    
+    NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSMakeRect(0, 0, 0, 0) 
+                                                            options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) 
+                                                              owner:self 
+                                                           userInfo:[NSDictionary dictionaryWithObject:topLayer forKey:@"layer"]];
+    [self addTrackingArea:fullArea];
     
     [self setOverlay:topLayer forType:IKOverlayTypeImage];
 }
@@ -127,6 +138,12 @@
         DLog(@"Created layer: %@", layer);
         
         [topLayer addSublayer:layer];
+        
+        NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:[self convertImageRectToViewRect:rect] 
+                                                            options:(NSTrackingMouseEnteredAndExited | NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow) 
+                                                              owner:self 
+                                                           userInfo:[NSDictionary dictionaryWithObject:layer forKey:@"layer"]];
+        [self addTrackingArea:area];
     }
 }
 
@@ -154,11 +171,6 @@
 - (void)viewWillDraw
 {
     [self refreshOverlays];
-}
-
-- (void)drawRect:(NSRect)dirtyRect
-{
-    [super drawRect:dirtyRect];
 }
 
 #pragma mark Mouse events
@@ -215,18 +227,33 @@
 
 - (void)cursorUpdate:(NSEvent *)theEvent
 {
-    NSPoint mousePoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
-    
-    if (state == MECreatingState && [self layerAtPoint:mousePoint] == topLayer) {
-        [[NSCursor crosshairCursor] set];
-    } else if (state == MEModifyingState) {
-        [[NSCursor openHandCursor] set];
-    } else if (state == MEDeletingState) {
-        [[NSCursor disappearingItemCursor] set];
-    }
+    [self setMouseForPoint:[self convertWindowPointToImagePoint:[theEvent locationInWindow]]];
+}
+
+- (void)mouseExited:(NSEvent *)theEvent
+{
+    [self setMouseForPoint:[self convertWindowPointToImagePoint:[theEvent locationInWindow]]];
 }
 
 #pragma mark Helpers
+
+- (void)setMouseForPoint:(NSPoint)point
+{
+    //Unfortunately necessary to do it this way since I don't get -cursorUpdate: messages when the mouse leaves a layer and goes back to the topLayer.
+    
+    CALayer *layer = [self layerAtPoint:point];
+    
+    if (state == MECreatingState && layer == topLayer) {
+        DLog(@"layer %@ topLayer %@", layer, topLayer);
+        [[NSCursor crosshairCursor] set];
+    } else if (state == MEModifyingState && layer != topLayer) {
+        [[NSCursor openHandCursor] set];
+    } else if (state == MEDeletingState && layer != topLayer) {
+        [[NSCursor disappearingItemCursor] set];
+    } else {
+        [[NSCursor arrowCursor] set];
+    }
+}
 
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint
 {
@@ -236,7 +263,7 @@
     return imagePoint;
 }
 
-- (CGPathRef)rectPathWithSize:(NSSize)size handles:(BOOL)handles
+- (CGPathRef)rectPathWithSize:(NSSize)size withHandles:(BOOL)handles
 {
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, NSMakeRect(0.0, 0.0, size.width, size.height));
@@ -259,7 +286,7 @@
     CAShapeLayer *layer = [CAShapeLayer layer];
     
     [layer setFrame:rect];
-    [layer setPath:[self rectPathWithSize:rect.size handles:handles]];
+    [layer setPath:[self rectPathWithSize:rect.size withHandles:handles]];
     
     [layer setFillColor:__backgroundColor];
     [layer setLineWidth:__borderWidth];
@@ -330,7 +357,7 @@
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [creatingLayer setFrame:imageRect];
-            [creatingLayer setPath:[self rectPathWithSize:imageRect.size handles:YES]];
+            [creatingLayer setPath:[self rectPathWithSize:imageRect.size withHandles:YES]];
             [CATransaction commit];
         }
         
