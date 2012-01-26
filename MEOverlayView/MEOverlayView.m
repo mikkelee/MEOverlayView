@@ -12,10 +12,21 @@
 #   define DLog(...)
 #endif
 
+#define MEDistance(A,B) sqrtf(powf(fabs(A.x - B.x), 2.0f) + powf(fabs(A.y - B.y), 2.0f))
+
 #import "MEOverlayView.h"
 
 #pragma mark -
 #pragma mark Helper class extension
+
+enum {
+    MENoCorner = -1,
+    MENorthEastCorner,
+    MENorthWestCorner,
+    MESouthEastCorner,
+    MESouthWestCorner
+};
+typedef NSUInteger MECorner;
 
 @interface MEOverlayView ()
 
@@ -31,7 +42,8 @@
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
 - (CGPathRef)rectPathWithSize:(NSSize)size withHandles:(BOOL)handles;
 - (CAShapeLayer *)layerWithRect:(NSRect)rect withHandles:(BOOL)handles;
-- (CALayer *)layerAtPoint:(NSPoint)point;
+- (CAShapeLayer *)layerAtPoint:(NSPoint)point;
+- (MECorner)cornerOfLayer:(CALayer *)layer atPoint:(NSPoint)point;
 - (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
 
@@ -57,12 +69,20 @@
     BOOL __allowsOverlappingOverlays;
     BOOL __wantsOverlayActions;
     
+    //internal helper ivars
+    CGFloat handleWidth;
+    CGFloat handleOffset;
+    NSCursor *__northWestSouthEastResizeCursor;
+    NSCursor *__northEastSouthWestResizeCursor;
+    
     //events
     NSPoint mouseDownPoint;
     
     //temp vals
-    CAShapeLayer *creatingLayer;
-    CALayer *draggingLayer;
+    CAShapeLayer *activeLayer;
+    MECorner activeCorner;
+    NSPoint activeOrigin;
+    NSSize activeSize;
     CGFloat xOffset;
     CGFloat yOffset;
 }
@@ -87,6 +107,9 @@
     __allowsOverlappingOverlays = NO;
     __wantsOverlayActions = YES;
     
+    handleWidth = __borderWidth * 2.0f;
+    handleOffset = (__borderWidth / 2.0f) + 1.0f;
+    
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
 }
 
@@ -99,7 +122,7 @@
     
     [self refreshOverlays];
     
-    NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSMakeRect(0, 0, 0, 0) 
+    NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect 
                                                             options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) 
                                                               owner:self 
                                                            userInfo:[NSDictionary dictionaryWithObject:topLayer forKey:@"layer"]];
@@ -143,7 +166,7 @@
         [topLayer addSublayer:layer];
         
         NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:[self convertImageRectToViewRect:rect] 
-                                                            options:(NSTrackingMouseEnteredAndExited | NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow) 
+                                                            options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow) 
                                                               owner:self 
                                                            userInfo:[NSDictionary dictionaryWithObject:layer forKey:@"layer"]];
         [self addTrackingArea:area];
@@ -233,6 +256,11 @@
     [self setMouseForPoint:[self convertWindowPointToImagePoint:[theEvent locationInWindow]]];
 }
 
+- (void)mouseMoved:(NSEvent *)theEvent
+{
+    [self setMouseForPoint:[self convertWindowPointToImagePoint:[theEvent locationInWindow]]];
+}
+
 - (void)mouseExited:(NSEvent *)theEvent
 {
     [self setMouseForPoint:[self convertWindowPointToImagePoint:[theEvent locationInWindow]]];
@@ -243,12 +271,18 @@
 //Weird that NSCursor doesn't provide these types of cursor...
 - (NSCursor *)northWestSouthEastResizeCursor
 {
-    return [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northWestSouthEastResizeCursor.png"] hotSpot:NSZeroPoint];
+    if (__northWestSouthEastResizeCursor == nil) {
+        __northWestSouthEastResizeCursor = [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northWestSouthEastResizeCursor.png"] hotSpot:NSZeroPoint];
+    }
+    return __northWestSouthEastResizeCursor;
 }
 
 - (NSCursor *)northEastSouthWestResizeCursor
 {
-    return [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northEastSouthWestResizeCursor.png"] hotSpot:NSZeroPoint];
+    if (__northEastSouthWestResizeCursor == nil) {
+        __northEastSouthWestResizeCursor = [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northEastSouthWestResizeCursor.png"] hotSpot:NSZeroPoint];
+    }
+    return __northEastSouthWestResizeCursor;
 }
 
 - (void)setMouseForPoint:(NSPoint)point
@@ -261,7 +295,14 @@
         DLog(@"layer %@ topLayer %@", layer, topLayer);
         [[NSCursor crosshairCursor] set];
     } else if (state == MEModifyingState && layer != topLayer) {
-        [[NSCursor openHandCursor] set];
+        MECorner corner = [self cornerOfLayer:layer atPoint:point];
+        if (corner == MENorthEastCorner || corner == MESouthWestCorner) {
+            [[self northEastSouthWestResizeCursor] set];
+        } else if (corner == MENorthWestCorner || corner == MESouthEastCorner) {
+            [[self northWestSouthEastResizeCursor] set];
+        } else { //MENoCorner
+            [[NSCursor openHandCursor] set];
+        }
     } else if (state == MEDeletingState && layer != topLayer) {
         [[NSCursor disappearingItemCursor] set];
     } else {
@@ -283,9 +324,6 @@
     CGPathAddRect(path, NULL, NSMakeRect(0.0, 0.0, size.width, size.height));
     
     if (handles) {
-        CGFloat handleWidth = __borderWidth * 2.0f;
-        CGFloat handleOffset = (__borderWidth / 2.0f) + 1.0f;
-        
         CGPathAddEllipseInRect(path, NULL, NSMakeRect(-handleOffset, -handleOffset, handleWidth, handleWidth));
         CGPathAddEllipseInRect(path, NULL, NSMakeRect(-handleOffset, size.height - handleOffset, handleWidth, handleWidth));
         CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - handleOffset, -handleOffset, handleWidth, handleWidth));
@@ -305,18 +343,53 @@
     [layer setFillColor:__backgroundColor];
     [layer setLineWidth:__borderWidth];
     [layer setStrokeColor:__borderColor];
+    [layer setNeedsDisplayOnBoundsChange:YES];
     
     return layer;
 }
 
-- (CALayer *)layerAtPoint:(NSPoint)point
+- (CAShapeLayer *)layerAtPoint:(NSPoint)point
 {
     CALayer *rootLayer = [self overlayForType:IKOverlayTypeImage];
     CALayer *hitLayer = [rootLayer hitTest:[self convertImagePointToViewPoint:point]];
     
+    if ([hitLayer class] != NSClassFromString(@"CAShapeLayer")) {
+        NSLog(@"Something weird is going on, hitLayer was supposed to be a CAShapeLayer: %@", hitLayer);
+    }
     DLog(@"hitLayer for obj %@: %@", [hitLayer valueForKey:@"MEOverlayObject"], hitLayer);
     
-    return hitLayer;
+    return (CAShapeLayer *)hitLayer;
+}
+
+- (MECorner)cornerOfLayer:(CALayer *)layer atPoint:(NSPoint)point
+{
+    NSRect frame = [layer frame];
+    
+    CGFloat tolerance = handleWidth * 2.0f;
+    
+    NSPoint swPoint = NSMakePoint(frame.origin.x, 
+                                  frame.origin.y);
+    
+    NSPoint nwPoint = NSMakePoint(frame.origin.x, 
+                                  frame.origin.y + frame.size.height - (tolerance / 2.0f));
+    
+    NSPoint nePoint = NSMakePoint(frame.origin.x + frame.size.width - (tolerance / 2.0f), 
+                                  frame.origin.y + frame.size.height - (tolerance / 2.0f));
+    
+    NSPoint sePoint = NSMakePoint(frame.origin.x + frame.size.width - (tolerance / 2.0f), 
+                                  frame.origin.y);
+    
+    if (MEDistance(point, nePoint) <= tolerance) {
+        return MENorthEastCorner;
+    } else if (MEDistance(point, nwPoint) <= tolerance) {
+        return MENorthWestCorner;
+    } else if (MEDistance(point, sePoint) <= tolerance) {
+        return MESouthEastCorner;
+    } else if (MEDistance(point, swPoint) <= tolerance) {
+        return MESouthWestCorner;
+    } else {
+        return MENoCorner;
+    }
 }
 
 - (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer
@@ -353,85 +426,110 @@
     
     if (state == MECreatingState && [self allowsCreatingOverlays]) {
         DLog(@"creating");
-        if (creatingLayer == nil) {
-            creatingLayer = [self layerWithRect:NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f) withHandles:YES];
+        if (activeLayer == nil) {
+            activeLayer = [self layerWithRect:NSZeroRect withHandles:YES];
             
-            [topLayer addSublayer:creatingLayer];
+            [topLayer addSublayer:activeLayer];
         }
         
-        //make rect
         NSPoint origin = NSMakePoint(fmin(startPoint.x, endPoint.x), fmin(startPoint.y, endPoint.y));
         NSPoint end = NSMakePoint(fmax(startPoint.x, endPoint.x), fmax(startPoint.y, endPoint.y));
         NSSize size = NSMakeSize(end.x - origin.x, end.y - origin.y);
-        NSRect imageRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
+        NSRect newRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
         
-        BOOL validLocation = [self isRect:imageRect validForLayer:creatingLayer];
+        BOOL validLocation = [self isRect:newRect validForLayer:activeLayer];
         
         if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
-            [creatingLayer setFrame:imageRect];
-            [creatingLayer setPath:[self rectPathWithSize:imageRect.size withHandles:YES]];
+            [activeLayer setFrame:newRect];
+            [activeLayer setPath:[self rectPathWithSize:newRect.size withHandles:YES]];
             [CATransaction commit];
         }
         
         if (done) {
-            DLog(@"done creating: %@", NSStringFromRect([creatingLayer frame]));
-            [__delegate overlayView:self didCreateOverlay:[creatingLayer frame]];
-            [creatingLayer removeFromSuperlayer];
-            creatingLayer = nil;
+            DLog(@"done creating: %@", NSStringFromRect([activeLayer frame]));
+            [__delegate overlayView:self didCreateOverlay:[activeLayer frame]];
+            [activeLayer removeFromSuperlayer];
+            activeLayer = nil;
             [self refreshOverlays];
         }
     } else if (state == MEModifyingState && [self allowsModifyingOverlays]) {
         DLog(@"modifying");
         
-        //determine whether resizing or dragging!
-        
-        if (draggingLayer == nil) {
-            CALayer *hitLayer = [self layerAtPoint:mouseDownPoint];
+        if (activeLayer == nil) {
+            CAShapeLayer *hitLayer = [self layerAtPoint:startPoint];
             if (hitLayer == topLayer || [hitLayer valueForKey:@"MEOverlayObject"] == nil) {
                 return;
             }
-            draggingLayer = hitLayer;
-            xOffset = [draggingLayer position].x - endPoint.x;
-            yOffset = [draggingLayer position].y - endPoint.y;
+            activeLayer = hitLayer;
+            activeCorner = [self cornerOfLayer:activeLayer atPoint:startPoint];
+            
+            xOffset = [activeLayer position].x - endPoint.x;
+            yOffset = [activeLayer position].y - endPoint.y;
+            
+            activeOrigin = [activeLayer frame].origin;
+            activeSize = [activeLayer frame].size;
             
             DLog(@"xOffset: %f yOffset: %f", xOffset, yOffset);
         }
         [[NSCursor closedHandCursor] set];
         
-        NSPoint pos = [draggingLayer position];
+        NSRect newRect = NSZeroRect;
         
-        DLog(@"old position: %@", NSStringFromPoint(pos));
+        CGFloat xDelta = endPoint.x - startPoint.x;
+        CGFloat yDelta = endPoint.y - startPoint.y;
         
-        pos.x = endPoint.x + xOffset;
-        pos.y = endPoint.y + yOffset;
+        if (activeCorner == MENorthEastCorner) {
+            newRect = NSMakeRect(activeOrigin.x, 
+                                 activeOrigin.y, 
+                                 activeSize.width + xDelta, 
+                                 activeSize.height + yDelta);
+        } else if (activeCorner == MENorthWestCorner) {
+            newRect = NSMakeRect(activeOrigin.x + xDelta, 
+                                 activeOrigin.y, 
+                                 activeSize.width - xDelta, 
+                                 activeSize.height + yDelta);
+        } else if (activeCorner == MESouthEastCorner) {
+            newRect = NSMakeRect(activeOrigin.x, 
+                                 activeOrigin.y + yDelta, 
+                                 activeSize.width + xDelta, 
+                                 activeSize.height - yDelta);
+        } else if (activeCorner == MESouthWestCorner) {
+            newRect = NSMakeRect(activeOrigin.x + xDelta, 
+                                 activeOrigin.y + yDelta, 
+                                 activeSize.width - xDelta, 
+                                 activeSize.height - yDelta);
+        } else { //MENoCorner
+            newRect = NSMakeRect(endPoint.x + xOffset - (activeSize.width * 0.5f), 
+                                 endPoint.y + yOffset - (activeSize.height * 0.5f), 
+                                 activeSize.width, 
+                                 activeSize.height);
+        }
         
-        DLog(@"new position: %@", NSStringFromPoint(pos));
+        DLog(@"corner: %lu : %@", activeCorner, NSStringFromRect(newRect));
         
-        NSRect bounds = [draggingLayer bounds];
-        NSRect newRect = NSMakeRect(pos.x - (bounds.size.width * 0.5f), 
-                                    pos.y - (bounds.size.height * 0.5f), 
-                                    bounds.size.width, 
-                                    bounds.size.height);
-        BOOL validLocation = [self isRect:newRect validForLayer:draggingLayer];
+        BOOL validLocation = [self isRect:newRect validForLayer:activeLayer];
         
         if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
-            [draggingLayer setPosition:pos];
+            [activeLayer setFrame:newRect];
+            [activeLayer setPath:[self rectPathWithSize:newRect.size withHandles:YES]];
             [CATransaction commit];
         }
         
         if (done) {
-            DLog(@"done modifying %@: %@", [draggingLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([draggingLayer frame]));
-            [__delegate overlayView:self didModifyOverlay:[draggingLayer valueForKey:@"MEOverlayObject"] newRect:[draggingLayer frame]];
-            draggingLayer = nil;
+            DLog(@"done modifying %@: %@", [activeLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([activeLayer frame]));
+            [__delegate overlayView:self didModifyOverlay:[activeLayer valueForKey:@"MEOverlayObject"] newRect:[activeLayer frame]];
+            activeLayer = nil;
             [self refreshOverlays];
             [[NSCursor openHandCursor] set];
         }
     }
 }
+
+
 
 #pragma mark Properties
 

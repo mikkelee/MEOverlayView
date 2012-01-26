@@ -43,9 +43,11 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Features to add ##
 
-* resizing with corner handles 
+* None at the moment :o
 
 ## Bugs/uncleanliness ##
+
+* Resizing corners are somewhat wonky to catch with the mouse.
 
 * Get a clearer idea of when it's a good idea to -refreshOverlays (ie. when should a view poll its data source?)
 
