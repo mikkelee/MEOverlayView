@@ -26,13 +26,12 @@
 
 @interface NSObject (MEOverlayViewDelegate)
 
-- (void)didCreateOverlay:(NSRect)rect;
-- (void)didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
-- (void)didDeleteOverlay:(id)overlayObject;
+- (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect;
+- (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
+- (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
 
-- (void)overlay:(id)overlayObject singleClicked:(NSEvent *)event;
-- (void)overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
-
+- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
+- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
 
 @end
 

@@ -58,7 +58,7 @@
     return [overlays objectAtIndex:num];
 }
 
-- (void)didCreateOverlay:(NSRect)rect
+- (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect
 {
     NSLog(@"overlay created: %@", NSStringFromRect(rect));
     [overlays addObject:[NSValue valueWithRect:rect]];
@@ -68,7 +68,7 @@
      */
 }
 
-- (void)didModifyOverlay:(id)overlayObject newRect:(NSRect)rect
+- (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect
 {
     NSLog(@"overlay %@ got new rectangle %@", overlayObject, NSStringFromRect(rect));
     [overlays removeObject:overlayObject];
@@ -81,7 +81,7 @@
      */
 }
 
-- (void)didDeleteOverlay:(id)overlayObject
+- (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject
 {
     NSLog(@"overlay %@ deleted", overlayObject);
     [overlays removeObject:overlayObject];
@@ -92,12 +92,12 @@
      */
 }
 
-- (void)overlay:(id)overlayObject singleClicked:(NSEvent *)event
+- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event
 {
     NSLog(@"overlay %@ received %@", overlayObject, event);
 }
 
-- (void)overlay:(id)overlayObject doubleClicked:(NSEvent *)event
+- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event
 {
     NSLog(@"overlay %@ received %@", overlayObject, event);
 }

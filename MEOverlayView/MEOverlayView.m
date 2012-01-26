@@ -185,13 +185,13 @@
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
     if (state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
-        [__delegate didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
+        [__delegate overlayView:self didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
         [self refreshOverlays];
     } else if (state == MEIdleState && [self wantsOverlayActions] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([theEvent clickCount] == 1) {
-            [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
+            [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
         } else if ([theEvent clickCount] == 2) {
-            [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
+            [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
         } else {
             [super mouseUp:theEvent];
         }
@@ -306,7 +306,7 @@
         
         if (done) {
             DLog(@"done creating: %@", NSStringFromRect([creatingLayer frame]));
-            [__delegate didCreateOverlay:[creatingLayer frame]];
+            [__delegate overlayView:self didCreateOverlay:[creatingLayer frame]];
             [creatingLayer removeFromSuperlayer];
             creatingLayer = nil;
             [self refreshOverlays];
@@ -351,7 +351,7 @@
         
         if (done) {
             DLog(@"done modifying %@: %@", [draggingLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([draggingLayer frame]));
-            [__delegate didModifyOverlay:[draggingLayer valueForKey:@"MEOverlayObject"] newRect:[draggingLayer frame]];
+            [__delegate overlayView:self didModifyOverlay:[draggingLayer valueForKey:@"MEOverlayObject"] newRect:[draggingLayer frame]];
             draggingLayer = nil;
             [self refreshOverlays];
             [[NSCursor openHandCursor] set];
