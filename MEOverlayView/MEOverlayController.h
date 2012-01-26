@@ -13,7 +13,7 @@
     IBOutlet MEOverlayView *overlayView;
 }
 
-- (IBAction)update:(id)sender;
+- (IBAction)logCurrentOverlays:(id)sender;
 - (IBAction)changeState:(id)sender;
 
 @end

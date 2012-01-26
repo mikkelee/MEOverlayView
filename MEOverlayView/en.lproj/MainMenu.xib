@@ -1323,7 +1323,7 @@
 						<object class="NSButton" id="13851264">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{511, 12}, {85, 32}}</string>
+							<string key="NSFrame">{{427, 12}, {169, 32}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView"/>
@@ -1332,7 +1332,7 @@
 							<object class="NSButtonCell" key="NSCell" id="746092397">
 								<int key="NSCellFlags">67239424</int>
 								<int key="NSCellFlags2">134217728</int>
-								<string key="NSContents">Update</string>
+								<string key="NSContents">Log current overlays</string>
 								<object class="NSFont" key="NSSupport" id="555342785">
 									<string key="NSName">LucidaGrande</string>
 									<double key="NSSize">13</double>
@@ -2149,19 +2149,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">update:</string>
-						<reference key="source" ref="184308823"/>
-						<reference key="destination" ref="13851264"/>
-					</object>
-					<int key="connectionID">573</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
 						<string key="label">changeState:</string>
 						<reference key="source" ref="184308823"/>
 						<reference key="destination" ref="905695490"/>
 					</object>
 					<int key="connectionID">581</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">logCurrentOverlays:</string>
+						<reference key="source" ref="184308823"/>
+						<reference key="destination" ref="13851264"/>
+					</object>
+					<int key="connectionID">602</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -3633,7 +3633,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">601</int>
+			<int key="maxID">602</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3682,15 +3682,15 @@
 					<string key="superclassName">NSObject</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="changeState:">id</string>
-						<string key="update:">id</string>
+						<string key="logCurrentOverlays:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="changeState:">
 							<string key="name">changeState:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="update:">
-							<string key="name">update:</string>
+						<object class="IBActionInfo" key="logCurrentOverlays:">
+							<string key="name">logCurrentOverlays:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>

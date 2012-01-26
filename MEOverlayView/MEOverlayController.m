@@ -109,9 +109,9 @@
     NSLog(@"overlay #%lu received %@", num, event);
 }
 
-- (IBAction)update:(id)sender
+- (IBAction)logCurrentOverlays:(id)sender
 {
-    [overlayView setupOverlays];
+    NSLog(@"overlays: %@", rects);
 }
 
 - (IBAction)changeState:(id)sender
