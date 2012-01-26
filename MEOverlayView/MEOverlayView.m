@@ -84,8 +84,6 @@ typedef NSUInteger MECorner;
     CGFloat __handleOffset;
     NSCursor *__northWestSouthEastResizeCursor;
     NSCursor *__northEastSouthWestResizeCursor;
-    NSInteger __selectedOverlay;
-    NSMutableIndexSet *__selectedIndexes;
     
     //events
     NSPoint __mouseDownPoint;
@@ -101,6 +99,7 @@ typedef NSUInteger MECorner;
     
     //cache
     NSMutableArray *__overlayCache;
+    NSMutableArray *__selectedOverlays;
 }
 
 #pragma mark Initialization
@@ -132,10 +131,8 @@ typedef NSUInteger MECorner;
         __handleWidth = __overlayBorderWidth * 2.0f;
         __handleOffset = (__overlayBorderWidth / 2.0f) + 1.0f;
         
-        __selectedIndexes = [NSMutableIndexSet indexSet];
-        __selectedOverlay = -1;
-        
         __overlayCache = [NSMutableArray arrayWithCapacity:0];
+        __selectedOverlays = [NSMutableArray arrayWithCapacity:0];
     }
     
     return self;
@@ -189,9 +186,8 @@ typedef NSUInteger MECorner;
     DLog(@"start");
     [__topLayer setSublayers:[NSArray array]];
     
-    if (![self allowsEmptySelection] && [__selectedIndexes count] == 0) {
-        __selectedIndexes = [NSMutableIndexSet indexSetWithIndex:0];
-        __selectedOverlay = 0;
+    if (![self allowsEmptySelection] && [__selectedOverlays count] == 0 && [__overlayCache count] > 0) {
+        __selectedOverlays = [NSMutableArray arrayWithObject:[__overlayCache lastObject]];
     }
     
     __weak MEOverlayView *weakSelf = self;
@@ -210,12 +206,9 @@ typedef NSUInteger MECorner;
                                          userInfo:nil];
         }
         
-        BOOL selected = NO;
-        if ([__selectedIndexes containsIndex:i]) {
-            selected = YES;
-        }
-        
-        CALayer *layer = [strongSelf layerWithRect:rect handles:(__state == MEModifyingState) selected:selected];
+        CALayer *layer = [strongSelf layerWithRect:rect 
+                                           handles:(__state == MEModifyingState)
+                                          selected:[__selectedOverlays containsObject:overlayObject]];
         
         [layer setValue:[NSNumber numberWithInteger:i] forKey:@"MEOverlayNumber"];
         [layer setValue:overlayObject forKey:@"MEOverlayObject"];
@@ -267,45 +260,47 @@ typedef NSUInteger MECorner;
 - (void)selectOverlayIndexes:(NSIndexSet *)indexes byExtendingSelection:(BOOL)extend
 {
     if (extend) {
-        [__selectedIndexes addIndexes:indexes];
+        [__selectedOverlays addObjectsFromArray:[__overlayCache objectsAtIndexes:indexes]];
     } else {
-        __selectedIndexes = [indexes mutableCopy];
+        __selectedOverlays = [[__overlayCache objectsAtIndexes:indexes] mutableCopy];
     }
 }
 
 - (NSInteger)selectedOverlay
 {
-    return __selectedOverlay;
+    return [__selectedOverlays count]-1;
 }
 
 - (NSIndexSet *)selectedOverlayIndexes
 {
-    return __selectedIndexes;
+    return [__overlayCache indexesOfObjectsPassingTest:^(id overlayObject, NSUInteger i, BOOL *stop){
+        return [__selectedOverlays containsObject:overlayObject];
+    }];
 }
 
 - (void)deselectOverlay:(NSInteger)overlayIndex
 {
-    [__selectedIndexes removeIndex:overlayIndex];
+    [__selectedOverlays removeObject:[__overlayCache objectAtIndex:overlayIndex]];
 }
 
 - (NSInteger)numberOfSelectedOverlays
 {
-    return [__selectedIndexes count];
+    return [__selectedOverlays count];
 }
 
 - (BOOL)isOverlaySelected:(NSInteger)overlayIndex
 {
-    return [__selectedIndexes containsIndex:overlayIndex];
+    return [__selectedOverlays containsObject:[__overlayCache objectAtIndex:overlayIndex]];
 }
 
 - (void)selectAll:(id)sender
 {
-    __selectedIndexes = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [__delegate numberOfOverlaysInOverlayView:self])];
+    __selectedOverlays = [__overlayCache mutableCopy];
 }
 
 - (void)deselectAll:(id)sender
 {
-    __selectedIndexes = [NSMutableIndexSet indexSet];
+    __selectedOverlays = [NSMutableArray arrayWithCapacity:2];
 }
 
 #pragma mark Drawing
@@ -351,28 +346,24 @@ typedef NSUInteger MECorner;
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
     if (__state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
-        [__delegate overlayView:self didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
+        [__delegate overlayView:self didDeleteOverlay:];
+        if ([__selectedOverlays containsObject:[hitLayer valueForKey:@"MEOverlayObject"]]) {
+            [__selectedOverlays removeObject:[hitLayer valueForKey:@"MEOverlayObject"]];
+        }
     } else if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([self allowsSelection]) {
             NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
             DLog(@"checking select with %lu", layerNumber);
-            if ([__selectedIndexes containsIndex:layerNumber]) {
-                if ([__selectedIndexes count] > 1 || [self allowsEmptySelection]) {
+            if ([self isOverlaySelected:layerNumber]) {
+                if ([self numberOfSelectedOverlays] > 1 || [self allowsEmptySelection]) {
                     DLog(@"deselected");
-                    [__selectedIndexes removeIndex:layerNumber];
-                    __selectedOverlay = -1;
+                    [self deselectOverlay:layerNumber];
                 }
             } else {
-                if ([self allowsMultipleSelection]) {
-                    DLog(@"multiple");
-                    [__selectedIndexes addIndex:layerNumber];
-                } else {
-                    DLog(@"changing selection");
-                    __selectedIndexes = [NSMutableIndexSet indexSetWithIndex:layerNumber];
-                }
+                [self selectOverlayIndexes:[NSIndexSet indexSetWithIndex:layerNumber] 
+                      byExtendingSelection:[self allowsMultipleSelection]];
             }
-            __selectedOverlay = layerNumber;
-            DLog(@"selectedOverlay: %lu selectionIndexes: %@", __selectedOverlay, __selectedIndexes);
+            DLog(@"current selection: %@", __selectedOverlays);
             [self drawOverlays];
         }
         if (([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) && [hitLayer valueForKey:@"MEOverlayObject"] != nil) {
