@@ -271,7 +271,7 @@
         
         BOOL validLocation = [self layer:creatingLayer willGetValidRect:imageRect];
         
-        if (!validLocation) {
+        if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [creatingLayer setFrame:imageRect];
