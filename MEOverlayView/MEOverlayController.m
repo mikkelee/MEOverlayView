@@ -39,21 +39,10 @@
 {
     //some examples -- try changing them to see how they work.
     
-    CGColorRef blueTransparent = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
-    CGColorRef blueOpaque = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f);
-    CGColorRef redTransparent = CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f);
-    CGColorRef redOpaque = CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 1.0f);
-    
-    [overlayView setOverlayBackgroundColor:blueTransparent];
-    [overlayView setOverlayBorderColor:blueOpaque];
-    [overlayView setOverlaySelectionBackgroundColor:redTransparent];
-    [overlayView setOverlaySelectionBorderColor:redOpaque];
-    
-    CFRelease(blueTransparent);
-    CFRelease(blueOpaque);
-    CFRelease(redTransparent);
-    CFRelease(redOpaque);
-    
+    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f)];
+    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f)];
+    [overlayView setOverlaySelectionBackgroundColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f)];
+    [overlayView setOverlaySelectionBorderColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 1.0f)];
     [overlayView setOverlayBorderWidth:3.0f];
     
     [overlayView setAllowsCreatingOverlays:YES];
