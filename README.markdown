@@ -43,7 +43,7 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Features to add ##
 
-* None at the moment :o
+* Add 'selected' indication (delegate can tell view that overlayObject is selected, and view will display it differently)
 
 ## Bugs/uncleanliness ##
 
