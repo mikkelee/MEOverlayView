@@ -1,8 +1,8 @@
 # README #
 
-*Note*: A work in progress. Selectors may change name / appear / disappear.
+**Note**: A work in progress. Selectors may change name / appear / disappear.
 
-A subclass of IKImageView that allows you to set an an overlayDataSource and an overlayDelegate. 
+A subclass of IKImageView that allows you to set an overlayDataSource and an overlayDelegate. 
 
 The data source supplies objects (that respond to -rect or -rectValue) which the overlay will draw on top of the image it's currently displaying.
 
@@ -47,7 +47,7 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Bugs/uncleanliness ##
 
-* Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge, or when allowsOverlappingOverlays == NO, another overlay)
+* Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay)
 
 * Tracking Areas: Can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
 

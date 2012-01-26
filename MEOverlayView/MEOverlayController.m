@@ -31,7 +31,7 @@
         
         NSLog(@"Created rects: %@", overlays);
         
-        //these are the same as the defaults, just to show how it can be done:
+        //some examples
         [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
         [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
         [overlayView setOverlayBorderWidth:3.0f];
@@ -41,6 +41,9 @@
         [overlayView setAllowsOverlappingOverlays:NO];
         [overlayView setWantsOverlaySingleClickActions:YES];
         [overlayView setWantsOverlaySingleClickActions:YES];
+        
+        [overlayView setAllowsSelection:YES];
+        [overlayView setAllowsEmptySelection:NO];
     }
     
     return self;

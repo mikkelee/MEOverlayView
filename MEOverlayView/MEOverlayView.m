@@ -48,7 +48,7 @@ typedef NSUInteger MECorner;
 //IKImageView:
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
 //CAShapeLayer:
-- (CAShapeLayer *)layerWithRect:(NSRect)rect handles:(BOOL)handles;
+- (CAShapeLayer *)layerWithRect:(NSRect)rect handles:(BOOL)handles selected:(BOOL)selected;
 
 @end
 
@@ -59,37 +59,44 @@ typedef NSUInteger MECorner;
     __weak id __delegate;
     id __dataSource;
     
-    MEState state;
-    CALayer *topLayer;
+    MEState __state;
+    CALayer *__topLayer;
     
     //properties
-    CGColorRef __backgroundColor;
-    CGColorRef __borderColor;
-    CGFloat __borderWidth;
+    CGColorRef __overlayBackgroundColor;
+    CGColorRef __overlayBorderColor;
+    CGColorRef __overlaySelectionBackgroundColor;
+    CGColorRef __overlaySelectionBorderColor;
+    CGFloat __overlayBorderWidth;
     BOOL __allowsCreatingOverlays;
     BOOL __allowsModifyingOverlays;
     BOOL __allowsDeletingOverlays;
     BOOL __allowsOverlappingOverlays;
     BOOL __wantsOverlaySingleClickActions;
     BOOL __wantsOverlayDoubleClickActions;
+    BOOL __allowsSelection;
+    BOOL __allowsEmptySelection;
+    BOOL __allowsMultipleSelection;
     
     //internal helper ivars
-    CGFloat handleWidth;
-    CGFloat handleOffset;
+    CGFloat __handleWidth;
+    CGFloat __handleOffset;
     NSCursor *__northWestSouthEastResizeCursor;
     NSCursor *__northEastSouthWestResizeCursor;
+    NSInteger __selectedOverlay;
+    NSMutableIndexSet *__selectedIndexes;
     
     //events
-    NSPoint mouseDownPoint;
+    NSPoint __mouseDownPoint;
     
     //temp vals
-    CAShapeLayer *activeLayer;
-    MECorner activeCorner;
-    NSPoint activeOrigin;
-    NSSize activeSize;
-    CGFloat xOffset;
-    CGFloat yOffset;
-    NSInvocation *singleClickInvocation;
+    CAShapeLayer *__activeLayer;
+    MECorner __activeCorner;
+    NSPoint __activeOrigin;
+    NSSize __activeSize;
+    CGFloat __xOffset;
+    CGFloat __yOffset;
+    NSInvocation *__singleClickInvocation;
 }
 
 #pragma mark Initialization
@@ -100,48 +107,55 @@ typedef NSUInteger MECorner;
     
     DLog(@"overlayDelegate: %@", __delegate);
 
-    state = MEIdleState;
+    __state = MEIdleState;
     
     //default property values:
-    __backgroundColor = CGColorCreateGenericRGB(0, 0, 1, 0.5);
-    __borderColor = CGColorCreateGenericRGB(0, 0, 1, 1);
-    __borderWidth = 3.0f;
+    __overlayBackgroundColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
+    __overlayBorderColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f);
+    __overlaySelectionBackgroundColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 0.5f);
+    __overlaySelectionBorderColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 1.0f);
+    __overlayBorderWidth = 3.0f;
     __allowsCreatingOverlays = YES;
     __allowsModifyingOverlays = YES;
     __allowsDeletingOverlays = YES;
     __allowsOverlappingOverlays = NO;
     __wantsOverlaySingleClickActions = YES;
     __wantsOverlayDoubleClickActions = YES;
+    __allowsSelection = YES;
+    __allowsEmptySelection = YES;
+    __allowsMultipleSelection = YES;
     
-    handleWidth = __borderWidth * 2.0f;
-    handleOffset = (__borderWidth / 2.0f) + 1.0f;
+    __handleWidth = __overlayBorderWidth * 2.0f;
+    __handleOffset = (__overlayBorderWidth / 2.0f) + 1.0f;
+    
+    __selectedIndexes = [NSMutableIndexSet indexSet];
     
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
 }
 
 - (void)initialSetup
 {
-    topLayer = [CALayer layer];
+    __topLayer = [CALayer layer];
     
-    [topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
-    [topLayer setName:@"topLayer"];
+    [__topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
+    [__topLayer setName:@"topLayer"];
     
     [self reloadData];
     
     NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect 
                                                             options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) 
                                                               owner:self 
-                                                           userInfo:[NSDictionary dictionaryWithObject:topLayer forKey:@"layer"]];
+                                                           userInfo:[NSDictionary dictionaryWithObject:__topLayer forKey:@"layer"]];
     [self addTrackingArea:fullArea];
     
-    [self setOverlay:topLayer forType:IKOverlayTypeImage];
+    [self setOverlay:__topLayer forType:IKOverlayTypeImage];
 }
 
 - (void)reloadData //TODO should be put into the view's normal lifetime
 {
     DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
     
-    [topLayer setSublayers:[NSArray array]];
+    [__topLayer setSublayers:[NSArray array]];
     
     DLog(@"Number of overlays to create: %lu", [__dataSource numberOfOverlaysInOverlayView:self]);
     
@@ -162,20 +176,29 @@ typedef NSUInteger MECorner;
                                          userInfo:nil];
         }
         
-        CALayer *layer = [self layerWithRect:rect handles:(state == MEModifyingState)];
+        BOOL selected = NO;
+        if ([__selectedIndexes containsIndex:i]) {
+            selected = YES;
+        }
+        
+        CALayer *layer = [self layerWithRect:rect handles:(__state == MEModifyingState) selected:selected];
         
         [layer setValue:[NSNumber numberWithInteger:i] forKey:@"MEOverlayNumber"];
         [layer setValue:overlayObject forKey:@"MEOverlayObject"];
         
         DLog(@"Created layer: %@", layer);
         
-        [topLayer addSublayer:layer];
+        [__topLayer addSublayer:layer];
         
         NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:[self convertImageRectToViewRect:rect] 
                                                             options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow) 
                                                               owner:self 
                                                            userInfo:[NSDictionary dictionaryWithObject:layer forKey:@"layer"]];
         [self addTrackingArea:area];
+    }
+    
+    if (![self allowsEmptySelection] && [self numberOfSelectedOverlays] == 0) {
+        [self selectOverlayIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
     }
 }
 
@@ -186,8 +209,8 @@ typedef NSUInteger MECorner;
     [self setOverlayDelegate:nil];
     [self setOverlayDataSource:nil];
     
-    CFRelease(__backgroundColor);
-    CFRelease(__borderColor);
+    CFRelease(__overlayBackgroundColor);
+    CFRelease(__overlayBorderColor);
 }
 
 #pragma mark State
@@ -202,11 +225,57 @@ typedef NSUInteger MECorner;
     } else if (_state == MEDeletingState && !__allowsDeletingOverlays) {
         return NO;
     } else {
-        DLog(@"%lu => %lu", state, _state);
-        state = _state;
+        DLog(@"%lu => %lu", __state, _state);
+        __state = _state;
         [self setNeedsDisplay:YES];
         return YES;
     }
+}
+
+#pragma mark Selection
+
+- (void)selectOverlayIndexes:(NSIndexSet *)indexes byExtendingSelection:(BOOL)extend
+{
+    if (extend) {
+        [__selectedIndexes addIndexes:indexes];
+    } else {
+        __selectedIndexes = [indexes mutableCopy];
+    }
+}
+
+- (NSInteger)selectedOverlay
+{
+    return __selectedOverlay;
+}
+
+- (NSIndexSet *)selectedOverlayIndexes
+{
+    return __selectedIndexes;
+}
+
+- (void)deselectOverlay:(NSInteger)overlayIndex
+{
+    [__selectedIndexes removeIndex:overlayIndex];
+}
+
+- (NSInteger)numberOfSelectedOverlays
+{
+    return [__selectedIndexes count];
+}
+
+- (BOOL)isOverlaySelected:(NSInteger)overlayIndex
+{
+    return [__selectedIndexes containsIndex:overlayIndex];
+}
+
+- (void)selectAll:(id)sender
+{
+    __selectedIndexes = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [__delegate numberOfOverlaysInOverlayView:self])];
+}
+
+- (void)deselectAll:(id)sender
+{
+    __selectedIndexes = [NSIndexSet indexSet];
 }
 
 #pragma mark Drawing
@@ -220,7 +289,7 @@ typedef NSUInteger MECorner;
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    mouseDownPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
+    __mouseDownPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     
     [super mouseDown:theEvent];
 }
@@ -230,11 +299,11 @@ typedef NSUInteger MECorner;
     NSPoint mouseUpPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     CGFloat epsilonSquared = 0.025;
     
-    CGFloat dx = mouseDownPoint.x - mouseUpPoint.x, dy = mouseDownPoint.y - mouseUpPoint.y;
+    CGFloat dx = __mouseDownPoint.x - mouseUpPoint.x, dy = __mouseDownPoint.y - mouseUpPoint.y;
     BOOL pointsAreEqual = (dx * dx + dy * dy) < epsilonSquared;
     
-    if ((state == MECreatingState || state == MEModifyingState) && !pointsAreEqual) {
-        [self draggedFrom:mouseDownPoint to:mouseUpPoint done:NO];
+    if ((__state == MECreatingState || __state == MEModifyingState) && !pointsAreEqual) {
+        [self draggedFrom:__mouseDownPoint to:mouseUpPoint done:NO];
     } else {
         [super mouseDragged:theEvent];
     }
@@ -245,37 +314,57 @@ typedef NSUInteger MECorner;
     NSPoint mouseUpPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     CGFloat epsilonSquared = 0.025;
     
-    CGFloat dx = mouseDownPoint.x - mouseUpPoint.x, dy = mouseDownPoint.y - mouseUpPoint.y;
+    CGFloat dx = __mouseDownPoint.x - mouseUpPoint.x, dy = __mouseDownPoint.y - mouseUpPoint.y;
     BOOL pointsAreEqual = (dx * dx + dy * dy) < epsilonSquared;
     
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
-    if (state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
+    if (__state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         [__delegate overlayView:self didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
-    } else if (state == MEIdleState && ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) && [hitLayer valueForKey:@"MEOverlayObject"]) {
+    } else if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"]) {
+        if ([self allowsSelection]) {
+            NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
+            DLog(@"checking select with %lu", layerNumber);
+            if ([__selectedIndexes containsIndex:layerNumber] && [self allowsEmptySelection]) {
+                DLog(@"deselected");
+                [__selectedIndexes removeIndex:layerNumber];
+                __selectedOverlay = -1;
+            } else if ([self allowsMultipleSelection]) {
+                DLog(@"multiple");
+                [__selectedIndexes addIndex:layerNumber];
+                __selectedOverlay = layerNumber;
+            } else {
+                DLog(@"changing selection");
+                __selectedIndexes = [NSMutableIndexSet indexSetWithIndex:layerNumber];
+                __selectedOverlay = layerNumber;
+            }
+            DLog(@"selectedOverlay: %lu selectionIndexes: %@", __selectedOverlay, __selectedIndexes);
+        }
+        if ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) {
         if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
             SEL theSelector = @selector(overlayView:overlay:singleClicked:);
-            singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__delegate class] instanceMethodSignatureForSelector:theSelector]];
+            __singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__delegate class] instanceMethodSignatureForSelector:theSelector]];
             
-            [singleClickInvocation setSelector:theSelector];
-            [singleClickInvocation setTarget:__delegate];
+            [__singleClickInvocation setSelector:theSelector];
+            [__singleClickInvocation setTarget:__delegate];
             MEOverlayView *selfRef = self;
             id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
-            [singleClickInvocation setArgument:&selfRef atIndex:2];
-            [singleClickInvocation setArgument:&overlayObject atIndex:3];
-            [singleClickInvocation setArgument:&theEvent atIndex:4];
+            [__singleClickInvocation setArgument:&selfRef atIndex:2];
+            [__singleClickInvocation setArgument:&overlayObject atIndex:3];
+            [__singleClickInvocation setArgument:&theEvent atIndex:4];
             
-            [singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
+            [__singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
             //[__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
         } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
-            DLog(@"Cancelling single click: %@", singleClickInvocation);
-            [NSRunLoop cancelPreviousPerformRequestsWithTarget:singleClickInvocation];
+            DLog(@"Cancelling single click: %@", __singleClickInvocation);
+            [NSRunLoop cancelPreviousPerformRequestsWithTarget:__singleClickInvocation];
             [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
         } else {
             [super mouseUp:theEvent];
         }
-    } else if ((state == MECreatingState || state == MEModifyingState) && !pointsAreEqual) {
-        [self draggedFrom:mouseDownPoint to:mouseUpPoint done:YES];
+        }
+    } else if ((__state == MECreatingState || __state == MEModifyingState) && !pointsAreEqual) {
+        [self draggedFrom:__mouseDownPoint to:mouseUpPoint done:YES];
     } else {
         [super mouseUp:theEvent];
     }
@@ -321,10 +410,10 @@ typedef NSUInteger MECorner;
     
     CALayer *layer = [self layerAtPoint:point];
     
-    if (state == MECreatingState && layer == topLayer) {
-        DLog(@"layer %@ topLayer %@", layer, topLayer);
+    if (__state == MECreatingState && layer == __topLayer) {
+        DLog(@"layer %@ topLayer %@", layer, __topLayer);
         [[NSCursor crosshairCursor] set];
-    } else if (state == MEModifyingState && layer != topLayer) {
+    } else if (__state == MEModifyingState && layer != __topLayer) {
         MECorner corner = [self cornerOfLayer:layer atPoint:point];
         if (corner == MENorthEastCorner || corner == MESouthWestCorner) {
             [[self northEastSouthWestResizeCursor] set];
@@ -333,7 +422,7 @@ typedef NSUInteger MECorner;
         } else { //MENoCorner
             [[NSCursor openHandCursor] set];
         }
-    } else if (state == MEDeletingState && layer != topLayer) {
+    } else if (__state == MEDeletingState && layer != __topLayer) {
         [[NSCursor disappearingItemCursor] set];
     } else {
         [[NSCursor arrowCursor] set];
@@ -354,16 +443,16 @@ typedef NSUInteger MECorner;
     CGPathAddRect(path, NULL, NSMakeRect(0.0, 0.0, size.width, size.height));
     
     if (handles) {
-        CGPathAddEllipseInRect(path, NULL, NSMakeRect(-handleOffset, -handleOffset, handleWidth, handleWidth));
-        CGPathAddEllipseInRect(path, NULL, NSMakeRect(-handleOffset, size.height - handleOffset, handleWidth, handleWidth));
-        CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - handleOffset, -handleOffset, handleWidth, handleWidth));
-        CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - handleOffset, size.height - handleOffset, handleWidth, handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(-__handleOffset, -__handleOffset, __handleWidth, __handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(-__handleOffset, size.height - __handleOffset, __handleWidth, __handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - __handleOffset, -__handleOffset, __handleWidth, __handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - __handleOffset, size.height - __handleOffset, __handleWidth, __handleWidth));
     }
     
     return path;
 }
 
-- (CAShapeLayer *)layerWithRect:(NSRect)rect handles:(BOOL)handles
+- (CAShapeLayer *)layerWithRect:(NSRect)rect handles:(BOOL)handles selected:(BOOL)selected
 {
     CAShapeLayer *layer = [CAShapeLayer layer];
     
@@ -372,9 +461,15 @@ typedef NSUInteger MECorner;
     [layer setPath:path];
     CFRelease(path);
     
-    [layer setFillColor:__backgroundColor];
-    [layer setLineWidth:__borderWidth];
-    [layer setStrokeColor:__borderColor];
+    if (selected) {
+        DLog(@"drawing selected");
+        [layer setFillColor:__overlaySelectionBackgroundColor];
+        [layer setStrokeColor:__overlaySelectionBorderColor];
+    } else {
+        [layer setFillColor:__overlayBackgroundColor];
+        [layer setStrokeColor:__overlayBorderColor];
+    }
+    [layer setLineWidth:__overlayBorderWidth];
     [layer setNeedsDisplayOnBoundsChange:YES];
     
     return layer;
@@ -394,7 +489,7 @@ typedef NSUInteger MECorner;
 {
     NSRect frame = [layer frame];
     
-    CGFloat tolerance = handleWidth * 2.0f;
+    CGFloat tolerance = __handleWidth * 2.0f;
     
     NSPoint swPoint = NSMakePoint(frame.origin.x, 
                                   frame.origin.y);
@@ -434,7 +529,7 @@ typedef NSUInteger MECorner;
     }
     
     if (![self allowsOverlappingOverlays]) {
-        for (CALayer *sublayer in [topLayer sublayers]) {
+        for (CALayer *sublayer in [__topLayer sublayers]) {
             if (layer == sublayer) {
                 continue; //don't compare against oneself
             }
@@ -453,12 +548,12 @@ typedef NSUInteger MECorner;
 {
     DLog(@"from %@ to %@", NSStringFromPoint(startPoint), NSStringFromPoint(endPoint));
     
-    if (state == MECreatingState && [self allowsCreatingOverlays]) {
+    if (__state == MECreatingState && [self allowsCreatingOverlays]) {
         DLog(@"creating");
-        if (activeLayer == nil) {
-            activeLayer = [self layerWithRect:NSZeroRect handles:YES];
+        if (__activeLayer == nil) {
+            __activeLayer = [self layerWithRect:NSZeroRect handles:YES selected:YES];
             
-            [topLayer addSublayer:activeLayer];
+            [__topLayer addSublayer:__activeLayer];
         }
         
         NSPoint origin = NSMakePoint(fmin(startPoint.x, endPoint.x), fmin(startPoint.y, endPoint.y));
@@ -466,42 +561,42 @@ typedef NSUInteger MECorner;
         NSSize size = NSMakeSize(end.x - origin.x, end.y - origin.y);
         NSRect newRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
         
-        BOOL validLocation = [self rect:newRect isValidForLayer:activeLayer];
+        BOOL validLocation = [self rect:newRect isValidForLayer:__activeLayer];
         
         if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
-            [activeLayer setFrame:newRect];
+            [__activeLayer setFrame:newRect];
             CGPathRef path = [self newRectPathWithSize:newRect.size handles:YES];
-            [activeLayer setPath:path];
+            [__activeLayer setPath:path];
             CFRelease(path);
             [CATransaction commit];
         }
         
         if (done) {
-            DLog(@"done creating: %@", NSStringFromRect([activeLayer frame]));
-            [__delegate overlayView:self didCreateOverlay:[activeLayer frame]];
-            [activeLayer removeFromSuperlayer];
-            activeLayer = nil;
+            DLog(@"done creating: %@", NSStringFromRect([__activeLayer frame]));
+            [__delegate overlayView:self didCreateOverlay:[__activeLayer frame]];
+            [__activeLayer removeFromSuperlayer];
+            __activeLayer = nil;
         }
-    } else if (state == MEModifyingState && [self allowsModifyingOverlays]) {
+    } else if (__state == MEModifyingState && [self allowsModifyingOverlays]) {
         DLog(@"modifying");
         
-        if (activeLayer == nil) {
+        if (__activeLayer == nil) {
             CAShapeLayer *hitLayer = [self layerAtPoint:startPoint];
-            if (hitLayer == topLayer || [hitLayer valueForKey:@"MEOverlayObject"] == nil) {
+            if (hitLayer == __topLayer || [hitLayer valueForKey:@"MEOverlayObject"] == nil) {
                 return;
             }
-            activeLayer = hitLayer;
-            activeCorner = [self cornerOfLayer:activeLayer atPoint:startPoint];
+            __activeLayer = hitLayer;
+            __activeCorner = [self cornerOfLayer:__activeLayer atPoint:startPoint];
             
-            xOffset = [activeLayer position].x - endPoint.x;
-            yOffset = [activeLayer position].y - endPoint.y;
+            __xOffset = [__activeLayer position].x - endPoint.x;
+            __yOffset = [__activeLayer position].y - endPoint.y;
             
-            activeOrigin = [activeLayer frame].origin;
-            activeSize = [activeLayer frame].size;
+            __activeOrigin = [__activeLayer frame].origin;
+            __activeSize = [__activeLayer frame].size;
             
-            DLog(@"xOffset: %f yOffset: %f", xOffset, yOffset);
+            DLog(@"xOffset: %f yOffset: %f", __xOffset, __yOffset);
         }
         [[NSCursor closedHandCursor] set];
         
@@ -510,31 +605,31 @@ typedef NSUInteger MECorner;
         CGFloat xDelta = endPoint.x - startPoint.x;
         CGFloat yDelta = endPoint.y - startPoint.y;
         
-        if (activeCorner == MENorthEastCorner) {
-            newRect = NSMakeRect(activeOrigin.x, 
-                                 activeOrigin.y, 
-                                 activeSize.width + xDelta, 
-                                 activeSize.height + yDelta);
-        } else if (activeCorner == MENorthWestCorner) {
-            newRect = NSMakeRect(activeOrigin.x + xDelta, 
-                                 activeOrigin.y, 
-                                 activeSize.width - xDelta, 
-                                 activeSize.height + yDelta);
-        } else if (activeCorner == MESouthEastCorner) {
-            newRect = NSMakeRect(activeOrigin.x, 
-                                 activeOrigin.y + yDelta, 
-                                 activeSize.width + xDelta, 
-                                 activeSize.height - yDelta);
-        } else if (activeCorner == MESouthWestCorner) {
-            newRect = NSMakeRect(activeOrigin.x + xDelta, 
-                                 activeOrigin.y + yDelta, 
-                                 activeSize.width - xDelta, 
-                                 activeSize.height - yDelta);
+        if (__activeCorner == MENorthEastCorner) {
+            newRect = NSMakeRect(__activeOrigin.x, 
+                                 __activeOrigin.y, 
+                                 __activeSize.width + xDelta, 
+                                 __activeSize.height + yDelta);
+        } else if (__activeCorner == MENorthWestCorner) {
+            newRect = NSMakeRect(__activeOrigin.x + xDelta, 
+                                 __activeOrigin.y, 
+                                 __activeSize.width - xDelta, 
+                                 __activeSize.height + yDelta);
+        } else if (__activeCorner == MESouthEastCorner) {
+            newRect = NSMakeRect(__activeOrigin.x, 
+                                 __activeOrigin.y + yDelta, 
+                                 __activeSize.width + xDelta, 
+                                 __activeSize.height - yDelta);
+        } else if (__activeCorner == MESouthWestCorner) {
+            newRect = NSMakeRect(__activeOrigin.x + xDelta, 
+                                 __activeOrigin.y + yDelta, 
+                                 __activeSize.width - xDelta, 
+                                 __activeSize.height - yDelta);
         } else { //MENoCorner
-            newRect = NSMakeRect(endPoint.x + xOffset - (activeSize.width * 0.5f), 
-                                 endPoint.y + yOffset - (activeSize.height * 0.5f), 
-                                 activeSize.width, 
-                                 activeSize.height);
+            newRect = NSMakeRect(endPoint.x + __xOffset - (__activeSize.width * 0.5f), 
+                                 endPoint.y + __yOffset - (__activeSize.height * 0.5f), 
+                                 __activeSize.width, 
+                                 __activeSize.height);
         }
         
         /*
@@ -549,24 +644,24 @@ typedef NSUInteger MECorner;
          
          */
         
-        DLog(@"corner: %lu : %@", activeCorner, NSStringFromRect(newRect));
+        DLog(@"corner: %lu : %@", __activeCorner, NSStringFromRect(newRect));
         
-        BOOL validLocation = [self rect:newRect isValidForLayer:activeLayer];
+        BOOL validLocation = [self rect:newRect isValidForLayer:__activeLayer];
         
         if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
-            [activeLayer setFrame:newRect];
+            [__activeLayer setFrame:newRect];
             CGPathRef path = [self newRectPathWithSize:newRect.size handles:YES];
-            [activeLayer setPath:path];
+            [__activeLayer setPath:path];
             CFRelease(path);
             [CATransaction commit];
         }
         
         if (done) {
-            DLog(@"done modifying %@: %@", [activeLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([activeLayer frame]));
-            [__delegate overlayView:self didModifyOverlay:[activeLayer valueForKey:@"MEOverlayObject"] newRect:[activeLayer frame]];
-            activeLayer = nil;
+            DLog(@"done modifying %@: %@", [__activeLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([__activeLayer frame]));
+            [__delegate overlayView:self didModifyOverlay:[__activeLayer valueForKey:@"MEOverlayObject"] newRect:[__activeLayer frame]];
+            __activeLayer = nil;
             [[NSCursor openHandCursor] set];
         }
     }
@@ -579,15 +674,22 @@ typedef NSUInteger MECorner;
 @synthesize overlayDelegate = __delegate;
 @synthesize overlayDataSource = __dataSource;
 
-@synthesize overlayBackgroundColor;
-@synthesize overlayBorderColor;
-@synthesize overlayBorderWidth;
+@synthesize overlayBackgroundColor = __overlayBackgroundColor;
+@synthesize overlayBorderColor = __overlayBorderColor;
+@synthesize overlaySelectionBackgroundColor = __overlaySelectionBackgroundColor;
+@synthesize overlaySelectionBorderColor = __overlaySelectionBorderColor;
+@synthesize overlayBorderWidth = __overlayBorderWidth;
 
 @synthesize allowsCreatingOverlays = __allowsCreatingOverlays;
 @synthesize allowsModifyingOverlays = __allowsModifyingOverlays;
 @synthesize allowsDeletingOverlays = __allowsDeletingOverlays;
 @synthesize allowsOverlappingOverlays = __allowsOverlappingOverlays;
+
 @synthesize wantsOverlaySingleClickActions = __wantsOverlaySingleClickActions;
 @synthesize wantsOverlayDoubleClickActions = __wantsOverlayDoubleClickActions;
+
+@synthesize allowsSelection = __allowsSelection;
+@synthesize allowsEmptySelection = __allowsEmptySelection;
+@synthesize allowsMultipleSelection = __allowsMultipleSelection;
 
 @end
