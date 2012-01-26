@@ -93,6 +93,7 @@
      Do whatever else you feel like here... 
      In reality you wouldn't delete/replace, but modify the actual object you're given. 
      I'm just doing it like this here because I'm using NSValues in the example.
+     This also causes the object to lose its selection if modified, since it is no longer the same object.
      */
     [overlayView reloadData];
 }

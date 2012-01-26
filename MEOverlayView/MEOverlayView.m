@@ -380,7 +380,8 @@ typedef NSUInteger MECorner;
                 [__singleClickInvocation setArgument:&selfRef atIndex:2];
                 [__singleClickInvocation setArgument:&overlayObject atIndex:3];
                 [__singleClickInvocation setArgument:&theEvent atIndex:4];
-                
+                [__singleClickInvocation retainArguments]; 
+               
                 [__singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
                 //[__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
             } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
