@@ -18,7 +18,7 @@
 
 //initialization
 - (void)initialSetup;
-- (void)setupOverlays;
+- (void)refreshOverlays;
 
 //helpers
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
@@ -91,12 +91,12 @@
     [topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
     [topLayer setName:@"topLayer"];
     
-    [self setupOverlays];
+    [self refreshOverlays];
     
     [self setOverlay:topLayer forType:IKOverlayTypeImage];
 }
 
-- (void)setupOverlays //TODO should be put into the view's normal lifetime
+- (void)refreshOverlays //TODO should be put into the view's normal lifetime
 {
     DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
     
@@ -170,7 +170,7 @@
     
     if (state == MEDeletingState && [__delegate allowsDeletingOverlays]) {
         [__delegate didDeleteOverlay:overlayNum];
-        [self setupOverlays];
+        [self refreshOverlays];
     } else if (state == MEIdleState && [__delegate wantsEventsForOverlays]) {
         [__delegate overlay:overlayNum receivedEvent:theEvent];
     } else if ((state == MECreatingState || state == MEModifyingState) && !pointsAreEqual) {
@@ -288,7 +288,7 @@
             [__delegate didCreateOverlay:[creatingLayer frame]];
             [creatingLayer removeFromSuperlayer];
             creatingLayer = nil;
-            [self setupOverlays];
+            [self refreshOverlays];
         }
     } else if (state == MEModifyingState && [__delegate allowsModifyingOverlays]) {
         DLog(@"modifying");
@@ -333,7 +333,7 @@
             DLog(@"done modifying #%lu: %@", overlayNum, NSStringFromRect([draggingLayer frame]));
             [__delegate didModifyOverlay:overlayNum newRect:[draggingLayer frame]];
             draggingLayer = nil;
-            [self setupOverlays];
+            [self refreshOverlays];
             [[NSCursor openHandCursor] set];
         }
     }
