@@ -24,6 +24,9 @@
 - (void)refreshOverlays;
 
 //helpers
+
+- (NSCursor *)northWestSouthEastResizeCursor;
+- (NSCursor *)northEastSouthWestResizeCursor;
 - (void)setMouseForPoint:(NSPoint)point;
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
 - (CGPathRef)rectPathWithSize:(NSSize)size withHandles:(BOOL)handles;
@@ -237,6 +240,17 @@
 
 #pragma mark Helpers
 
+//Weird that NSCursor doesn't provide these types of cursor...
+- (NSCursor *)northWestSouthEastResizeCursor
+{
+    return [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northWestSouthEastResizeCursor.png"] hotSpot:NSZeroPoint];
+}
+
+- (NSCursor *)northEastSouthWestResizeCursor
+{
+    return [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northEastSouthWestResizeCursor.png"] hotSpot:NSZeroPoint];
+}
+
 - (void)setMouseForPoint:(NSPoint)point
 {
     //Unfortunately necessary to do it this way since I don't get -cursorUpdate: messages when the mouse leaves a layer and goes back to the topLayer.
@@ -370,6 +384,9 @@
         }
     } else if (state == MEModifyingState && [self allowsModifyingOverlays]) {
         DLog(@"modifying");
+        
+        //determine whether resizing or dragging!
+        
         if (draggingLayer == nil) {
             CALayer *hitLayer = [self layerAtPoint:mouseDownPoint];
             if (hitLayer == topLayer || [hitLayer valueForKey:@"MEOverlayObject"] == nil) {
