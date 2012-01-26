@@ -1,10 +1,14 @@
 NOTE: A work in progress. Selectors may change name / appear / disappear.
 
-A subclass of IKImageView that allows you to set an overlayDelegate. The delegate can supply rects that will be overlaid the view, and the view can in turn create/modify/delete overlays depending on what the delegate allows. It can also send NSEvents back to the delegate in case it wants to take action, for instance when an overlay is clicked or double clicked.
+A subclass of IKImageView that allows you to set an an overlayDataSource and an overlayDelegate. 
 
-I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDelegate and implement the selectors from the protocol (see the .h file).
+The data source supplies objects (that respond to -rect or -rectValue) which the overlay will draw on top of the image it's currently displaying.
 
-Build & run MEOverlayView.app for an example of the functionality.
+The delegate is in turn told when an overlay was created/modified/deleted, depending on what allowances have been set up. Additionally, mouseclicks (single / double) can be supplied to the delegate.
+
+I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols.
+
+Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine.
 
 All coordinates are in the image's coordinates.
 

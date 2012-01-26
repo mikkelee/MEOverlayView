@@ -8,12 +8,6 @@
 
 #import <Quartz/Quartz.h>
 
-/*
- 
- All NSRects are in the image's coordinate system.
- 
- */
-
 @class MEOverlayView;
 
 @interface NSObject (MEOverlayViewDataSource)
@@ -54,10 +48,10 @@ typedef NSUInteger MEState;
 @property CGColorRef overlayBorderColor; //default: blue, alpha 1.0
 @property CGFloat overlayBorderWidth; //default 3.0f
 
-@property BOOL allowsCreatingOverlays;
-@property BOOL allowsModifyingOverlays;
-@property BOOL allowsDeletingOverlays;
-@property BOOL allowsOverlappingOverlays; //note: A bit finicky, if the mouse moves "fast", it stops well before overlapping.
-@property BOOL wantsOverlayActions;
+@property BOOL allowsCreatingOverlays; //default YES
+@property BOOL allowsModifyingOverlays; //default YES
+@property BOOL allowsDeletingOverlays; //default YES
+@property BOOL allowsOverlappingOverlays; //default NO (note: somewhat finicky when mouse is moving "fast")
+@property BOOL wantsOverlayActions; //default YES
 
 @end
