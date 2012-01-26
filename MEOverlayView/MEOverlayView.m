@@ -35,17 +35,21 @@ typedef NSUInteger MECorner;
 - (void)refreshOverlays;
 
 //helpers
-
-- (NSCursor *)northWestSouthEastResizeCursor;
-- (NSCursor *)northEastSouthWestResizeCursor;
 - (void)setMouseForPoint:(NSPoint)point;
-- (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
-- (CGPathRef)rectPathWithSize:(NSSize)size withHandles:(BOOL)handles;
-- (CAShapeLayer *)layerWithRect:(NSRect)rect withHandles:(BOOL)handles;
+- (CGPathRef)newRectPathWithSize:(NSSize)size handles:(BOOL)handles;
 - (CAShapeLayer *)layerAtPoint:(NSPoint)point;
 - (MECorner)cornerOfLayer:(CALayer *)layer atPoint:(NSPoint)point;
-- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer;
+- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
+
+//maybe these should be put in categories on their respective objects?
+//NSCursor:
+- (NSCursor *)northWestSouthEastResizeCursor;
+- (NSCursor *)northEastSouthWestResizeCursor;
+//IKImageView:
+- (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
+//CAShapeLayer:
+- (CAShapeLayer *)layerWithRect:(NSRect)rect handles:(BOOL)handles;
 
 @end
 
@@ -156,7 +160,7 @@ typedef NSUInteger MECorner;
                                          userInfo:nil];
         }
         
-        CALayer *layer = [self layerWithRect:rect withHandles:(state == MEModifyingState)];
+        CALayer *layer = [self layerWithRect:rect handles:(state == MEModifyingState)];
         
         [layer setValue:[NSNumber numberWithInteger:i] forKey:@"MEOverlayNumber"];
         [layer setValue:overlayObject forKey:@"MEOverlayObject"];
@@ -171,6 +175,17 @@ typedef NSUInteger MECorner;
                                                            userInfo:[NSDictionary dictionaryWithObject:layer forKey:@"layer"]];
         [self addTrackingArea:area];
     }
+}
+
+#pragma mark State
+
+- (void)dealloc
+{
+    [self setOverlayDelegate:nil];
+    [self setOverlayDataSource:nil];
+    
+    CFRelease(__backgroundColor);
+    CFRelease(__borderColor);
 }
 
 #pragma mark State
@@ -318,7 +333,7 @@ typedef NSUInteger MECorner;
     return imagePoint;
 }
 
-- (CGPathRef)rectPathWithSize:(NSSize)size withHandles:(BOOL)handles
+- (CGPathRef)newRectPathWithSize:(NSSize)size handles:(BOOL)handles
 {
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathAddRect(path, NULL, NSMakeRect(0.0, 0.0, size.width, size.height));
@@ -333,12 +348,14 @@ typedef NSUInteger MECorner;
     return path;
 }
 
-- (CAShapeLayer *)layerWithRect:(NSRect)rect withHandles:(BOOL)handles
+- (CAShapeLayer *)layerWithRect:(NSRect)rect handles:(BOOL)handles
 {
     CAShapeLayer *layer = [CAShapeLayer layer];
     
     [layer setFrame:rect];
-    [layer setPath:[self rectPathWithSize:rect.size withHandles:handles]];
+    CGPathRef path = [self newRectPathWithSize:rect.size handles:handles];
+    [layer setPath:path];
+    CFRelease(path);
     
     [layer setFillColor:__backgroundColor];
     [layer setLineWidth:__borderWidth];
@@ -392,7 +409,7 @@ typedef NSUInteger MECorner;
     }
 }
 
-- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer
+- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)layer
 {
     if (rect.origin.x < 0.0f) {
         return NO;
@@ -405,13 +422,13 @@ typedef NSUInteger MECorner;
     }
     
     if (![self allowsOverlappingOverlays]) {
-        for (CALayer *layer in [topLayer sublayers]) {
-            if (layer == _layer) {
+        for (CALayer *sublayer in [topLayer sublayers]) {
+            if (layer == sublayer) {
                 continue; //don't compare against oneself
             }
-            NSRect frameRect = [layer frame];
+            NSRect frameRect = [sublayer frame];
             if (NSIntersectsRect(rect, frameRect)) {
-                DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(rect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(rect));
+                DLog(@"layer %@ (rect %@) would intersect layer #%lu %@: %@", layer, NSStringFromRect(rect), [[sublayer valueForKey:@"MEOverlayNumber"] integerValue], sublayer, NSStringFromRect(rect));
                 return NO;
             }
         }
@@ -427,7 +444,7 @@ typedef NSUInteger MECorner;
     if (state == MECreatingState && [self allowsCreatingOverlays]) {
         DLog(@"creating");
         if (activeLayer == nil) {
-            activeLayer = [self layerWithRect:NSZeroRect withHandles:YES];
+            activeLayer = [self layerWithRect:NSZeroRect handles:YES];
             
             [topLayer addSublayer:activeLayer];
         }
@@ -443,7 +460,9 @@ typedef NSUInteger MECorner;
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [activeLayer setFrame:newRect];
-            [activeLayer setPath:[self rectPathWithSize:newRect.size withHandles:YES]];
+            CGPathRef path = [self newRectPathWithSize:newRect.size handles:YES];
+            [activeLayer setPath:path];
+            CFRelease(path);
             [CATransaction commit];
         }
         
@@ -515,7 +534,9 @@ typedef NSUInteger MECorner;
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [activeLayer setFrame:newRect];
-            [activeLayer setPath:[self rectPathWithSize:newRect.size withHandles:YES]];
+            CGPathRef path = [self newRectPathWithSize:newRect.size handles:YES];
+            [activeLayer setPath:path];
+            CFRelease(path);
             [CATransaction commit];
         }
         

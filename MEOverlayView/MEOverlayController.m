@@ -28,22 +28,22 @@
         }
         
         NSLog(@"Created rects: %@", overlays);
+        
+        //these are the same as the defaults, just to show how it can be done:
+        [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
+        [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
+        [overlayView setOverlayBorderWidth:3.0f];
+        [overlayView setAllowsCreatingOverlays:YES];
+        [overlayView setAllowsModifyingOverlays:YES];
+        [overlayView setAllowsDeletingOverlays:YES];
+        [overlayView setAllowsOverlappingOverlays:NO];
+        [overlayView setWantsOverlayActions:YES];
+        
+        //to check if viewWillDraw refreshes the overlays properly:
+        [overlays performSelector:@selector(addObject:) 
+                       withObject:[NSValue valueWithRect:NSMakeRect(20.0f, 20.0f, 540.0f, 20.0f)] 
+                       afterDelay:10.0f];
     }
-    
-    //these are the same as the defaults, just to show how it can be done:
-    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
-    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
-    [overlayView setOverlayBorderWidth:3.0f];
-    [overlayView setAllowsCreatingOverlays:YES];
-    [overlayView setAllowsModifyingOverlays:YES];
-    [overlayView setAllowsDeletingOverlays:YES];
-    [overlayView setAllowsOverlappingOverlays:NO];
-    [overlayView setWantsOverlayActions:YES];
-    
-    //to check if viewWillDraw refreshes the overlays properly:
-    [overlays performSelector:@selector(addObject:) 
-                withObject:[NSValue valueWithRect:NSMakeRect(20.0f, 20.0f, 540.0f, 20.0f)] 
-                afterDelay:10.0f];
     
     return self;
 }
