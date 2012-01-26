@@ -38,7 +38,7 @@ typedef NSUInteger MECorner;
 - (CGPathRef)newRectPathWithSize:(NSSize)size handles:(BOOL)handles;
 - (id)layerAtPoint:(NSPoint)point;
 - (MECorner)cornerOfLayer:(CALayer *)layer atPoint:(NSPoint)point;
-- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)layer;
+- (BOOL)rect:(NSRect)rect isValidForLayer:(CALayer *)layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
 
 //maybe these should be put in categories on their respective objects?
@@ -421,7 +421,7 @@ typedef NSUInteger MECorner;
     }
 }
 
-- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)layer
+- (BOOL)rect:(NSRect)rect isValidForLayer:(CALayer *)layer
 {
     if (rect.origin.x < 0.0f) {
         return NO;
@@ -466,7 +466,7 @@ typedef NSUInteger MECorner;
         NSSize size = NSMakeSize(end.x - origin.x, end.y - origin.y);
         NSRect newRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
         
-        BOOL validLocation = [self isRect:newRect validForLayer:activeLayer];
+        BOOL validLocation = [self rect:newRect isValidForLayer:activeLayer];
         
         if (validLocation) {
             [CATransaction begin];
@@ -537,9 +537,21 @@ typedef NSUInteger MECorner;
                                  activeSize.height);
         }
         
+        /*
+         TODO:
+         for smoother operation, something like:
+         
+         do {
+            newrect = ...
+            
+            delta = delta - (delta/abs(delta)) // make delta 1 closer to zero each iteration
+         } while (!isvalid);
+         
+         */
+        
         DLog(@"corner: %lu : %@", activeCorner, NSStringFromRect(newRect));
         
-        BOOL validLocation = [self isRect:newRect validForLayer:activeLayer];
+        BOOL validLocation = [self rect:newRect isValidForLayer:activeLayer];
         
         if (validLocation) {
             [CATransaction begin];
