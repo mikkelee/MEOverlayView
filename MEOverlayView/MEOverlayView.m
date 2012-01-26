@@ -132,11 +132,20 @@
 
 #pragma mark State
 
-- (void)enterState:(MEState)_state
+- (BOOL)enterState:(MEState)_state
 {
-    //check for allowances...
-    DLog(@"%lu => %lu", state, _state);
-    state = _state;
+    //check for allowances
+    if (_state == MECreatingState && !__allowsCreatingOverlays) {
+        return NO;
+    } else if (_state == MEModifyingState && !__allowsModifyingOverlays) {
+        return NO;
+    } else if (_state == MEDeletingState && !__allowsDeletingOverlays) {
+        return NO;
+    } else {
+        DLog(@"%lu => %lu", state, _state);
+        state = _state;
+        return YES;
+    }
 }
 
 #pragma mark Drawing
