@@ -55,8 +55,6 @@ typedef NSUInteger MEState;
 
 - (void)enterState:(MEState)_state;
 
-- (void)setupOverlays; //TMP
-
 @property (weak) IBOutlet id<MEOverlayViewDelegate> overlayDelegate;
 
 @end

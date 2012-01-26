@@ -29,6 +29,11 @@
         NSLog(@"Created rects: %@", rects);
     }
     
+    //to check if viewWillDraw refreshes the overlays properly:
+    [rects performSelector:@selector(addObject:) 
+                withObject:[NSValue valueWithRect:NSMakeRect(20.0f, 20.0f, 540.0f, 20.0f)] 
+                afterDelay:10.0f];
+    
     return self;
 }
 
