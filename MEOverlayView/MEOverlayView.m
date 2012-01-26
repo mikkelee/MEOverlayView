@@ -240,6 +240,7 @@
         NSRect viewRect = [self convertRect:windowRect fromView:[[self window] contentView]];
         NSRect imageRect = [self convertViewRectToImageRect:viewRect];
         
+        BOOL invalidLocation = NO;
         if (![__delegate allowsOverlappingOverlays]) {
             for (CALayer *layer in [topLayer sublayers]) {
                 if (layer == creatingLayer) {
@@ -248,15 +249,17 @@
                 NSRect frameRect = [layer frame];
                 if (NSIntersectsRect(imageRect, frameRect)) {
                     DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(imageRect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(frameRect));
-                    return;
+                    invalidLocation = YES;
                 }
             }
         }
         
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0.0f];
-        [creatingLayer setFrame:imageRect];
-        [CATransaction commit];
+        if (!invalidLocation) {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:0.0f];
+            [creatingLayer setFrame:imageRect];
+            [CATransaction commit];
+        }
         
         if (done) {
             DLog(@"done creating: %@", NSStringFromRect([creatingLayer frame]));
@@ -290,6 +293,7 @@
         
         DLog(@"new position: %@", NSStringFromPoint(pos));
         
+        BOOL invalidLocation = NO;
         if (![__delegate allowsOverlappingOverlays]) {
             for (CALayer *layer in [topLayer sublayers]) {
                 if (layer == draggingLayer) {
@@ -303,15 +307,17 @@
                                               bounds.size.height);
                 if (NSIntersectsRect(imageRect, frameRect)) {
                     DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(imageRect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(frameRect));
-                    return;
+                    invalidLocation = YES;
                 }
             }
         }
         
-        [CATransaction begin];
-        [CATransaction setAnimationDuration:0.0f];
-        [draggingLayer setPosition:pos];
-        [CATransaction commit];
+        if (!invalidLocation) {
+            [CATransaction begin];
+            [CATransaction setAnimationDuration:0.0f];
+            [draggingLayer setPosition:pos];
+            [CATransaction commit];
+        }
         
         if (done) {
             DLog(@"done modifying #%lu: %@", overlayNum, NSStringFromRect([draggingLayer frame]));
