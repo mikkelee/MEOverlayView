@@ -24,7 +24,7 @@
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
 - (CALayer *)layerWithRect:(NSRect)rect;
 - (CALayer *)layerAtPoint:(NSPoint)point;
-- (BOOL)layer:(CALayer *)_layer willGetValidRect:(NSRect)rect;
+- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
 
 @end
@@ -259,7 +259,7 @@
     return hitLayer;
 }
 
-- (BOOL)layer:(CALayer *)_layer willGetValidRect:(NSRect)rect
+- (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer
 {
     if (rect.origin.x < 0.0f) {
         return NO;
@@ -305,7 +305,7 @@
         NSSize size = NSMakeSize(end.x - origin.x, end.y - origin.y);
         NSRect imageRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
         
-        BOOL validLocation = [self layer:creatingLayer willGetValidRect:imageRect];
+        BOOL validLocation = [self isRect:imageRect validForLayer:draggingLayer];
         
         if (validLocation) {
             [CATransaction begin];
@@ -350,7 +350,7 @@
                                     pos.y - (bounds.size.height * 0.5f), 
                                     bounds.size.width, 
                                     bounds.size.height);
-        BOOL validLocation = [self layer:draggingLayer willGetValidRect:newRect];
+        BOOL validLocation = [self isRect:newRect validForLayer:draggingLayer];
         
         if (validLocation) {
             [CATransaction begin];
