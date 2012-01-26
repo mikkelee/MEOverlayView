@@ -47,8 +47,6 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Bugs/uncleanliness ##
 
-* Resizing corners are somewhat wonky to catch with the mouse.
-
 * Tracking Areas: Can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers.
 
 * Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge, or when allowsOverlappingOverlays == NO, another overlay)

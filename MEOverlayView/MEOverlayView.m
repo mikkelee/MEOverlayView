@@ -287,7 +287,7 @@ typedef NSUInteger MECorner;
 - (NSCursor *)northWestSouthEastResizeCursor
 {
     if (__northWestSouthEastResizeCursor == nil) {
-        __northWestSouthEastResizeCursor = [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northWestSouthEastResizeCursor.png"] hotSpot:NSZeroPoint];
+        __northWestSouthEastResizeCursor = [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northWestSouthEastResizeCursor.png"] hotSpot:NSMakePoint(8.0f, 8.0f)];
     }
     return __northWestSouthEastResizeCursor;
 }
@@ -295,7 +295,7 @@ typedef NSUInteger MECorner;
 - (NSCursor *)northEastSouthWestResizeCursor
 {
     if (__northEastSouthWestResizeCursor == nil) {
-        __northEastSouthWestResizeCursor = [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northEastSouthWestResizeCursor.png"] hotSpot:NSZeroPoint];
+        __northEastSouthWestResizeCursor = [[NSCursor alloc] initWithImage:[[NSImage alloc] initWithContentsOfFile:@"/System/Library/Frameworks/WebKit.framework/Versions/A/Frameworks/WebCore.framework/Versions/A/Resources/northEastSouthWestResizeCursor.png"] hotSpot:NSMakePoint(8.0f, 8.0f)];
     }
     return __northEastSouthWestResizeCursor;
 }
@@ -385,12 +385,12 @@ typedef NSUInteger MECorner;
                                   frame.origin.y);
     
     NSPoint nwPoint = NSMakePoint(frame.origin.x, 
-                                  frame.origin.y + frame.size.height - (tolerance / 2.0f));
+                                  frame.origin.y + frame.size.height);
     
-    NSPoint nePoint = NSMakePoint(frame.origin.x + frame.size.width - (tolerance / 2.0f), 
-                                  frame.origin.y + frame.size.height - (tolerance / 2.0f));
+    NSPoint nePoint = NSMakePoint(frame.origin.x + frame.size.width, 
+                                  frame.origin.y + frame.size.height);
     
-    NSPoint sePoint = NSMakePoint(frame.origin.x + frame.size.width - (tolerance / 2.0f), 
+    NSPoint sePoint = NSMakePoint(frame.origin.x + frame.size.width, 
                                   frame.origin.y);
     
     if (MEDistance(point, nePoint) <= tolerance) {
