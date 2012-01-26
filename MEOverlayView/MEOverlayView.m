@@ -17,6 +17,7 @@
 @interface MEOverlayView ()
 
 //initialization
+- (void)initialSetup;
 - (void)setupOverlays;
 
 //helpers
@@ -57,16 +58,14 @@
 
     state = MEIdleState;
     
-    [self performSelector:@selector(setupOverlays) withObject:nil afterDelay:0.0f];
+    [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
     
     NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSMakeRect(0, 0, 0, 0) options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) owner:self userInfo:nil];
     [self addTrackingArea:fullArea];
 }
 
-- (void)setupOverlays //TODO should be put into the view's normal lifetime
+- (void)initialSetup
 {
-    DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
-    
     if ([__delegate respondsToSelector:@selector(overlayBackgroundColor)]) {
         backgroundColor = [__delegate overlayBackgroundColor];
     } else {
@@ -85,12 +84,23 @@
         borderWidth = 3.0f;
     }
     
-    DLog(@"Number of overlays to create: %lu", [__delegate numberOfOverlays]);
-    
     topLayer = [CALayer layer];
     
     [topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
     [topLayer setName:@"topLayer"];
+    
+    [self setupOverlays];
+    
+    [self setOverlay:topLayer forType:IKOverlayTypeImage];
+}
+
+- (void)setupOverlays //TODO should be put into the view's normal lifetime
+{
+    DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
+    
+    [topLayer setSublayers:[NSArray array]];
+    
+    DLog(@"Number of overlays to create: %lu", [__delegate numberOfOverlays]);
     
     //create new layers for each rect in the delegate:
     for (NSUInteger i = 0; i < [__delegate numberOfOverlays]; i++) {
@@ -104,8 +114,6 @@
         
         [topLayer addSublayer:layer];
     }
-    
-    [self setOverlay:topLayer forType:IKOverlayTypeImage];
 }
 
 #pragma mark State
