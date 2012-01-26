@@ -185,7 +185,6 @@
     BOOL pointsAreEqual = (dx * dx + dy * dy) < epsilonSquared;
     
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
-    NSUInteger overlayNum = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
     
     if (state == MEDeletingState && [__delegate allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         [__delegate didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
@@ -208,7 +207,7 @@
     } else if (state == MEModifyingState) {
         [[NSCursor openHandCursor] set];
     } else if (state == MEDeletingState) {
-        [[NSCursor pointingHandCursor] set];
+        [[NSCursor disappearingItemCursor] set];
     }
 }
 
