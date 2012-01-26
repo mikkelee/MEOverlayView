@@ -23,6 +23,7 @@
 //helpers
 - (CALayer *)layerWithRect:(NSRect)rect;
 - (CALayer *)layerAtPoint:(NSPoint)point;
+- (BOOL)layer:(CALayer *)_layer willGetInvalidRect:(NSRect)rect;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
 
 @end
@@ -217,6 +218,24 @@
     return hitLayer;
 }
 
+- (BOOL)layer:(CALayer *)_layer willGetInvalidRect:(NSRect)rect
+{
+    //TODO check for bounds!
+    if (![__delegate allowsOverlappingOverlays]) {
+        for (CALayer *layer in [topLayer sublayers]) {
+            if (layer == _layer) {
+                continue; //don't compare against oneself
+            }
+            NSRect frameRect = [layer frame];
+            if (NSIntersectsRect(rect, frameRect)) {
+                DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(rect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(rect));
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done
 {
     DLog(@"from %@ to %@", NSStringFromPoint(startPoint), NSStringFromPoint(endPoint));
@@ -240,19 +259,7 @@
         NSRect viewRect = [self convertRect:windowRect fromView:[[self window] contentView]];
         NSRect imageRect = [self convertViewRectToImageRect:viewRect];
         
-        BOOL invalidLocation = NO;
-        if (![__delegate allowsOverlappingOverlays]) {
-            for (CALayer *layer in [topLayer sublayers]) {
-                if (layer == creatingLayer) {
-                    continue; //don't compare against oneself
-                }
-                NSRect frameRect = [layer frame];
-                if (NSIntersectsRect(imageRect, frameRect)) {
-                    DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(imageRect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(frameRect));
-                    invalidLocation = YES;
-                }
-            }
-        }
+        BOOL invalidLocation = [self layer:creatingLayer willGetInvalidRect:imageRect];
         
         if (!invalidLocation) {
             [CATransaction begin];
@@ -293,24 +300,12 @@
         
         DLog(@"new position: %@", NSStringFromPoint(pos));
         
-        BOOL invalidLocation = NO;
-        if (![__delegate allowsOverlappingOverlays]) {
-            for (CALayer *layer in [topLayer sublayers]) {
-                if (layer == draggingLayer) {
-                    continue; //don't compare against oneself
-                }
-                NSRect frameRect = [layer frame];
-                NSRect bounds = [draggingLayer bounds];
-                NSRect imageRect = NSMakeRect(pos.x - (bounds.size.width * 0.5f), 
-                                              pos.y - (bounds.size.height * 0.5f), 
-                                              bounds.size.width, 
-                                              bounds.size.height);
-                if (NSIntersectsRect(imageRect, frameRect)) {
-                    DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(imageRect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(frameRect));
-                    invalidLocation = YES;
-                }
-            }
-        }
+        NSRect bounds = [draggingLayer bounds];
+        NSRect newRect = NSMakeRect(pos.x - (bounds.size.width * 0.5f), 
+                                    pos.y - (bounds.size.height * 0.5f), 
+                                    bounds.size.width, 
+                                    bounds.size.height);
+        BOOL invalidLocation = [self layer:draggingLayer willGetInvalidRect:newRect];
         
         if (!invalidLocation) {
             [CATransaction begin];
