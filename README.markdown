@@ -43,9 +43,11 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Features to add ##
 
-* Add 'selected' indication (delegate can tell view that overlayObject is selected, and view will display it differently)
+* None at the moment.
 
 ## Bugs/uncleanliness ##
+
+* Selection: 
 
 * Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay)
 

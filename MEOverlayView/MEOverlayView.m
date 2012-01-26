@@ -346,10 +346,9 @@ typedef NSUInteger MECorner;
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
     if (__state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
-        [__delegate overlayView:self didDeleteOverlay:];
-        if ([__selectedOverlays containsObject:[hitLayer valueForKey:@"MEOverlayObject"]]) {
-            [__selectedOverlays removeObject:[hitLayer valueForKey:@"MEOverlayObject"]];
-        }
+        id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
+        [__delegate overlayView:self didDeleteOverlay:overlayObject];
+        [__selectedOverlays removeObject:overlayObject];
     } else if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([self allowsSelection]) {
             NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
