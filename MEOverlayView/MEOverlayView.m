@@ -36,7 +36,7 @@ typedef NSUInteger MECorner;
 //helpers
 - (void)setMouseForPoint:(NSPoint)point;
 - (CGPathRef)newRectPathWithSize:(NSSize)size handles:(BOOL)handles;
-- (CAShapeLayer *)layerAtPoint:(NSPoint)point;
+- (id)layerAtPoint:(NSPoint)point;
 - (MECorner)cornerOfLayer:(CALayer *)layer atPoint:(NSPoint)point;
 - (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
@@ -365,17 +365,14 @@ typedef NSUInteger MECorner;
     return layer;
 }
 
-- (CAShapeLayer *)layerAtPoint:(NSPoint)point
+- (id)layerAtPoint:(NSPoint)point
 {
     CALayer *rootLayer = [self overlayForType:IKOverlayTypeImage];
     CALayer *hitLayer = [rootLayer hitTest:[self convertImagePointToViewPoint:point]];
     
-    if ([hitLayer class] != NSClassFromString(@"CAShapeLayer")) {
-        NSLog(@"Something weird is going on, hitLayer was supposed to be a CAShapeLayer: %@", hitLayer);
-    }
     DLog(@"hitLayer for obj %@: %@", [hitLayer valueForKey:@"MEOverlayObject"], hitLayer);
     
-    return (CAShapeLayer *)hitLayer;
+    return hitLayer;
 }
 
 - (MECorner)cornerOfLayer:(CALayer *)layer atPoint:(NSPoint)point
