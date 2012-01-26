@@ -23,7 +23,7 @@
 //helpers
 - (CALayer *)layerWithRect:(NSRect)rect;
 - (CALayer *)layerAtPoint:(NSPoint)point;
-- (BOOL)layer:(CALayer *)_layer willGetInvalidRect:(NSRect)rect;
+- (BOOL)layer:(CALayer *)_layer willGetValidRect:(NSRect)rect;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
 
 @end
@@ -218,9 +218,18 @@
     return hitLayer;
 }
 
-- (BOOL)layer:(CALayer *)_layer willGetInvalidRect:(NSRect)rect
+- (BOOL)layer:(CALayer *)_layer willGetValidRect:(NSRect)rect
 {
-    //TODO check for bounds!
+    if (rect.origin.x < 0.0f) {
+        return NO;
+    } else if (rect.origin.y < 0.0f) {
+        return NO;
+    } else if (rect.origin.x + rect.size.width > [self imageSize].width) {
+        return NO;
+    } else if (rect.origin.y + rect.size.height > [self imageSize].height) {
+        return NO;
+    }
+    
     if (![__delegate allowsOverlappingOverlays]) {
         for (CALayer *layer in [topLayer sublayers]) {
             if (layer == _layer) {
@@ -229,11 +238,12 @@
             NSRect frameRect = [layer frame];
             if (NSIntersectsRect(rect, frameRect)) {
                 DLog(@"%@ intersects layer #%lu %@: %@", NSStringFromRect(rect), [[layer valueForKey:@"MEOverlayNumber"] integerValue], layer, NSStringFromRect(rect));
-                return YES;
+                return NO;
             }
         }
     }
-    return NO;
+    
+    return YES;
 }
 
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done
@@ -259,9 +269,9 @@
         NSRect viewRect = [self convertRect:windowRect fromView:[[self window] contentView]];
         NSRect imageRect = [self convertViewRectToImageRect:viewRect];
         
-        BOOL invalidLocation = [self layer:creatingLayer willGetInvalidRect:imageRect];
+        BOOL validLocation = [self layer:creatingLayer willGetValidRect:imageRect];
         
-        if (!invalidLocation) {
+        if (!validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [creatingLayer setFrame:imageRect];
@@ -305,9 +315,9 @@
                                     pos.y - (bounds.size.height * 0.5f), 
                                     bounds.size.width, 
                                     bounds.size.height);
-        BOOL invalidLocation = [self layer:draggingLayer willGetInvalidRect:newRect];
+        BOOL validLocation = [self layer:draggingLayer willGetValidRect:newRect];
         
-        if (!invalidLocation) {
+        if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [draggingLayer setPosition:pos];
