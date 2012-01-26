@@ -63,11 +63,11 @@ typedef NSUInteger MEState;
 @property (weak) IBOutlet id overlayDelegate;
 @property (strong) IBOutlet id overlayDataSource;
 
-@property CGColorRef overlayBackgroundColor; //default: blue, alpha 0.5
-@property CGColorRef overlayBorderColor; //default: blue, alpha 1.0
-@property CGColorRef overlaySelectionBackgroundColor; //default: green, alpha 0.5
-@property CGColorRef overlaySelectionBorderColor; //default: green, alpha 1.0
-@property CGFloat overlayBorderWidth; //default 3.0f
+@property (assign) CGColorRef overlayBackgroundColor; //default: blue, alpha 0.5
+@property (assign) CGColorRef overlayBorderColor; //default: blue, alpha 1.0
+@property (assign) CGColorRef overlaySelectionBackgroundColor; //default: green, alpha 0.5
+@property (assign) CGColorRef overlaySelectionBorderColor; //default: green, alpha 1.0
+@property (assign) CGFloat overlayBorderWidth; //default 3.0f
 
 @property BOOL allowsCreatingOverlays; //default YES
 @property BOOL allowsModifyingOverlays; //default YES
