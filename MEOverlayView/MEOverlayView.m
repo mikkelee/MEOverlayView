@@ -89,6 +89,7 @@ typedef NSUInteger MECorner;
     NSSize activeSize;
     CGFloat xOffset;
     CGFloat yOffset;
+    NSInvocation *singleClickInvocation;
 }
 
 #pragma mark Initialization
@@ -253,8 +254,22 @@ typedef NSUInteger MECorner;
         [__delegate overlayView:self didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
     } else if (state == MEIdleState && ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
-            [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
+            SEL theSelector = @selector(overlayView:overlay:singleClicked:);
+            singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__delegate class] instanceMethodSignatureForSelector:theSelector]];
+            
+            [singleClickInvocation setSelector:theSelector];
+            [singleClickInvocation setTarget:__delegate];
+            MEOverlayView *selfRef = self;
+            id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
+            [singleClickInvocation setArgument:&selfRef atIndex:2];
+            [singleClickInvocation setArgument:&overlayObject atIndex:3];
+            [singleClickInvocation setArgument:&theEvent atIndex:4];
+            
+            [singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
+            //[__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
         } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
+            DLog(@"Cancelling single click: %@", singleClickInvocation);
+            [NSRunLoop cancelPreviousPerformRequestsWithTarget:singleClickInvocation];
             [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
         } else {
             [super mouseUp:theEvent];

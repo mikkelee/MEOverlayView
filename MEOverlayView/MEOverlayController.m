@@ -99,7 +99,7 @@
 
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event
 {
-    NSLog(@"overlay %@ received %@", overlayObject, event);
+    NSLog(@"overlay %@ singleClicked: %@", overlayObject, event);
     /*
      Do whatever else you feel like here... 
      */
@@ -108,7 +108,7 @@
 
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event
 {
-    NSLog(@"overlay %@ received %@", overlayObject, event);
+    NSLog(@"overlay %@ doubleClicked: %@", overlayObject, event);
     /*
      Do whatever else you feel like here... 
      */
