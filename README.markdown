@@ -43,7 +43,7 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Features to add ##
 
-* None at the moment.
+* Keyboard control (arrows for nav)
 
 ## Bugs/uncleanliness ##
 
