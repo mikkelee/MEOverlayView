@@ -58,6 +58,7 @@
 		3E0833D214D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "royalty-free-food-image-cabbage.jpg"; sourceTree = "<group>"; };
 		3E0833D614D0B41D00AE31C2 /* MEOverlayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MEOverlayController.h; sourceTree = "<group>"; };
 		3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MEOverlayController.m; sourceTree = "<group>"; };
+		3EA621A514D103DC00FEEF87 /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +90,7 @@
 				3E0833BB14D0818100AE31C2 /* MEOverlayViewTests */,
 				3E08339714D0818100AE31C2 /* Frameworks */,
 				3E08339514D0818100AE31C2 /* Products */,
+				3EA621A514D103DC00FEEF87 /* README.txt */,
 			);
 			sourceTree = "<group>";
 		};
@@ -454,6 +456,7 @@
 				3E0833C814D0818100AE31C2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3E0833C914D0818100AE31C2 /* Build configuration list for PBXNativeTarget "MEOverlayViewTests" */ = {
 			isa = XCConfigurationList;
@@ -462,6 +465,7 @@
 				3E0833CB14D0818100AE31C2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

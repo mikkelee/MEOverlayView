@@ -21,6 +21,7 @@
 - (void)setupOverlays;
 
 //helpers
+- (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
 - (CALayer *)layerWithRect:(NSRect)rect;
 - (CALayer *)layerAtPoint:(NSPoint)point;
 - (BOOL)layer:(CALayer *)_layer willGetValidRect:(NSRect)rect;
@@ -136,14 +137,14 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    mouseDownPoint = [self convertViewPointToImagePoint:[theEvent locationInWindow]];
+    mouseDownPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     
     [super mouseDown:theEvent];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-    NSPoint mouseUpPoint = [self convertViewPointToImagePoint:[theEvent locationInWindow]];
+    NSPoint mouseUpPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     CGFloat epsilonSquared = 0.025;
     
     CGFloat dx = mouseDownPoint.x - mouseUpPoint.x, dy = mouseDownPoint.y - mouseUpPoint.y;
@@ -158,7 +159,7 @@
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-    NSPoint mouseUpPoint = [self convertViewPointToImagePoint:[theEvent locationInWindow]];
+    NSPoint mouseUpPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     CGFloat epsilonSquared = 0.025;
     
     CGFloat dx = mouseDownPoint.x - mouseUpPoint.x, dy = mouseDownPoint.y - mouseUpPoint.y;
@@ -181,7 +182,7 @@
 
 - (void)cursorUpdate:(NSEvent *)theEvent
 {
-    NSPoint mousePoint = [self convertViewPointToImagePoint:[theEvent locationInWindow]];
+    NSPoint mousePoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
     
     if (state == MECreatingState && [self layerAtPoint:mousePoint] == topLayer) {
         [[NSCursor crosshairCursor] set];
@@ -193,6 +194,14 @@
 }
 
 #pragma mark Helpers
+
+- (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint
+{
+    DLog(@"windowPoint: %@", NSStringFromPoint(windowPoint));
+    NSPoint imagePoint = [self convertViewPointToImagePoint:[self convertPoint:windowPoint fromView:[[self window] contentView]]];
+    DLog(@"imagePoint: %@", NSStringFromPoint(imagePoint));
+    return imagePoint;
+}
 
 - (CALayer *)layerWithRect:(NSRect)rect
 {
@@ -211,7 +220,7 @@
 - (CALayer *)layerAtPoint:(NSPoint)point
 {
     CALayer *rootLayer = [self overlayForType:IKOverlayTypeImage];
-    CALayer *hitLayer = [rootLayer hitTest:[self convertPoint:point fromView:nil]];
+    CALayer *hitLayer = [rootLayer hitTest:[self convertImagePointToViewPoint:point]];
     
     DLog(@"hitLayer #%lu: %@", [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue], hitLayer);
     
@@ -263,11 +272,7 @@
         NSPoint origin = NSMakePoint(fmin(startPoint.x, endPoint.x), fmin(startPoint.y, endPoint.y));
         NSPoint end = NSMakePoint(fmax(startPoint.x, endPoint.x), fmax(startPoint.y, endPoint.y));
         NSSize size = NSMakeSize(end.x - origin.x, end.y - origin.y);
-        NSRect windowRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
-        
-        //translate to image coordinates:
-        NSRect viewRect = [self convertRect:windowRect fromView:[[self window] contentView]];
-        NSRect imageRect = [self convertViewRectToImageRect:viewRect];
+        NSRect imageRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
         
         BOOL validLocation = [self layer:creatingLayer willGetValidRect:imageRect];
         
