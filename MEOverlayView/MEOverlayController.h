@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MEOverlayView.h"
 
-@interface MEOverlayController : NSObject <MEOverlayViewDelegate> {
+@class MEOverlayView;
+
+@interface MEOverlayController : NSObject {
     IBOutlet MEOverlayView *overlayView;
 }
 

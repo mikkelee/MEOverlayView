@@ -16,14 +16,15 @@
 
 @class MEOverlayView;
 
-@protocol MEOverlayViewDelegate <NSObject>
+@interface NSObject (MEOverlayViewDataSource)
 
-@required
 - (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
 - (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
-    //overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
+//overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
 
-@optional
+@end
+
+@interface NSObject (MEOverlayViewDelegate)
 
 //Will default to blue, with an alpha of 0.5 for the background & 1.0 for the border, which is 3 pts wide.
 - (CGColorRef)overlayBackgroundColor;
@@ -58,6 +59,6 @@ typedef NSUInteger MEState;
 
 - (void)enterState:(MEState)_state;
 
-@property (weak) IBOutlet id<MEOverlayViewDelegate> overlayDelegate;
+@property (weak) IBOutlet id overlayDelegate;
 
 @end

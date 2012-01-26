@@ -7,6 +7,7 @@
 //
 
 #import "MEOverlayController.h"
+#import "MEOverlayView.h"
 
 @implementation MEOverlayController {
     NSMutableArray *overlays;

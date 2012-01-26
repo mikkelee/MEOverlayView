@@ -30,7 +30,7 @@
 @end
 
 @implementation MEOverlayView {
-    __weak id<MEOverlayViewDelegate> __delegate;
+    __weak id __delegate;
     
     MEState state;
     CALayer *topLayer;
