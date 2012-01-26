@@ -49,11 +49,9 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 * Resizing corners are somewhat wonky to catch with the mouse.
 
-* Get a clearer idea of when it's a good idea to -refreshOverlays (ie. when should a view poll its data source?)
-
 * Tracking Areas: Can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers.
 
-* Make creating/modifying less finicky (when allowsOverlappingOverlays == NO, "fast" mouse movements can make the overlay appear stuck if it's too close to the edge/another overlay)
+* Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge, or when allowsOverlappingOverlays == NO, another overlay)
 
 * Rework the action sending code (doubleClick sends a singleClick first; possibly add more types)
 

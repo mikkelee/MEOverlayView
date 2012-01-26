@@ -46,7 +46,7 @@ enum {
 };
 typedef NSUInteger MEState;
 
-@interface MEOverlayView :IKImageView
+@interface MEOverlayView : IKImageView
 
 - (BOOL)enterState:(MEState)_state; //returns success of state change (depending on allowance properties)
 - (void)reloadData;
