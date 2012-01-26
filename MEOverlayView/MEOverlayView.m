@@ -31,6 +31,7 @@
 
 @implementation MEOverlayView {
     __weak id __delegate;
+    id __dataSource;
     
     MEState state;
     CALayer *topLayer;
@@ -99,13 +100,13 @@
     
     [topLayer setSublayers:[NSArray array]];
     
-    DLog(@"Number of overlays to create: %lu", [__delegate numberOfOverlaysInOverlayView:self]);
+    DLog(@"Number of overlays to create: %lu", [__dataSource numberOfOverlaysInOverlayView:self]);
     
     //create new layers for each rect in the delegate:
-    for (NSUInteger i = 0; i < [__delegate numberOfOverlaysInOverlayView:self]; i++) {
+    for (NSUInteger i = 0; i < [__dataSource numberOfOverlaysInOverlayView:self]; i++) {
         DLog(@"Creating layer #%lu", i);
         
-        id overlayObject = [__delegate overlayView:self overlayObjectAtIndex:i];
+        id overlayObject = [__dataSource overlayView:self overlayObjectAtIndex:i];
         
         NSRect rect;
         if ([overlayObject respondsToSelector:@selector(rectValue)]) {
@@ -362,6 +363,7 @@
 #pragma mark Properties
 
 @synthesize overlayDelegate = __delegate;
+@synthesize overlayDataSource = __dataSource;
 
 @synthesize overlayBackgroundColor;
 @synthesize overlayBorderColor;

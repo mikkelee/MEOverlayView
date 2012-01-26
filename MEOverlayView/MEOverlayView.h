@@ -48,6 +48,7 @@ typedef NSUInteger MEState;
 - (void)enterState:(MEState)_state;
 
 @property (weak) IBOutlet id overlayDelegate;
+@property (strong) IBOutlet id overlayDataSource;
 
 @property CGColorRef overlayBackgroundColor; //default: blue, alpha 0.5
 @property CGColorRef overlayBorderColor; //default: blue, alpha 1.0
