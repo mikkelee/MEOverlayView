@@ -18,26 +18,24 @@ All coordinates are in the image's coordinate system.
 
 The protocols as of Jan. 26, 2012:
 
-<code>
-@interface NSObject (MEOverlayViewDataSource)
-
-- (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
-- (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
-//overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
-
-@end
-
-@interface NSObject (MEOverlayViewDelegate)
-
-- (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect;
-- (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
-- (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
-
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
-
-@end
-</code>
+    @interface NSObject (MEOverlayViewDataSource)
+    
+    - (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
+    - (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
+    //overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
+    
+    @end
+    
+    @interface NSObject (MEOverlayViewDelegate)
+    
+    - (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect;
+    - (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
+    - (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
+    
+    - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
+    - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
+    
+    @end
 
 All methods are optional, but obviously nothing will happen unless you at least implement the data source.
 
