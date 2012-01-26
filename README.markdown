@@ -8,7 +8,7 @@ The data source supplies objects (that respond to -rect or -rectValue) which the
 
 The delegate is in turn told when an overlay was created/modified/deleted, depending on what allowances have been set up. Additionally, mouseclicks (single / double) can be supplied to the delegate.
 
-I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols.
+I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
 
 Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine.
 
@@ -41,13 +41,13 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 # TODO #
 
-* get a clearer idea of when it's a good idea to -refreshOverlays
+* get a clearer idea of when it's a good idea to -refreshOverlays (ie. when should a view poll its data source?)
 
-* rework the event sending code (only send actions -- wantsOverlayActions, doubleClick, singleClick?)
+* rework the action sending code (doubleClick sends a singleClick first; possibly add more types)
 
-* get better trackingareas (ie only show hand when over an overlay?)
+* get better trackingareas (better delete cursor - arrow with little minus)
 
-* make creating/modifying less finicky when allowsOverlappingOverlays == NO
+* make creating/modifying less finicky (when allowsOverlappingOverlays == NO, "fast" mouse movements can make the overlay appear stuck if it's too close to the edge/another overlay)
 
 * resizing with corner handles 
 
