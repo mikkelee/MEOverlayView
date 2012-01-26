@@ -37,19 +37,24 @@
 
 - (void)awakeFromNib
 {
-    //some examples
-    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
-    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
+    //some examples -- try changing them to see how they work.
+    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f)];
+    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f)];
+    [overlayView setOverlaySelectionBackgroundColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f)];
+    [overlayView setOverlaySelectionBorderColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 1.0f)];
     [overlayView setOverlayBorderWidth:3.0f];
+    
     [overlayView setAllowsCreatingOverlays:YES];
     [overlayView setAllowsModifyingOverlays:YES];
     [overlayView setAllowsDeletingOverlays:YES];
     [overlayView setAllowsOverlappingOverlays:NO];
-    [overlayView setWantsOverlaySingleClickActions:NO];
+    
+    [overlayView setWantsOverlaySingleClickActions:YES];
     [overlayView setWantsOverlayDoubleClickActions:NO];
     
     [overlayView setAllowsSelection:YES];
     [overlayView setAllowsEmptySelection:NO];
+    [overlayView setAllowsMultipleSelection:YES];
 }
 
 #pragma mark MEOverlayViewDataSource

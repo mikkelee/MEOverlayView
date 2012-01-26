@@ -10,7 +10,7 @@ The delegate is in turn told when an overlay was created/modified/deleted, depen
 
 I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
 
-Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine.
+Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine. Try changing the delegate setup in MEOverlayController's awakeFromNib to see different behaviors.
 
 All coordinates are in the image's coordinate system.
 
@@ -46,8 +46,6 @@ All methods are optional, but obviously nothing will happen unless you at least 
 * None at the moment.
 
 ## Bugs/uncleanliness ##
-
-* Selection: 
 
 * Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay)
 
