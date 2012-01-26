@@ -32,6 +32,7 @@ typedef NSUInteger MECorner;
 
 //initialization
 - (void)initialSetup;
+- (void)drawOverlays;
 
 //helpers
 - (void)setMouseForPoint:(NSPoint)point;
@@ -97,9 +98,48 @@ typedef NSUInteger MECorner;
     CGFloat __xOffset;
     CGFloat __yOffset;
     NSInvocation *__singleClickInvocation;
+    
+    //cache
+    NSMutableArray *__overlayCache;
 }
 
 #pragma mark Initialization
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+    self = [super initWithFrame:frameRect];
+    
+    if (self) {
+        DLog(@"init");
+        __state = MEIdleState;
+        
+        //default property values:
+        __overlayBackgroundColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
+        __overlayBorderColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f);
+        __overlaySelectionBackgroundColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 0.5f);
+        __overlaySelectionBorderColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 1.0f);
+        __overlayBorderWidth = 3.0f;
+        __allowsCreatingOverlays = YES;
+        __allowsModifyingOverlays = YES;
+        __allowsDeletingOverlays = YES;
+        __allowsOverlappingOverlays = NO;
+        __wantsOverlaySingleClickActions = YES;
+        __wantsOverlayDoubleClickActions = YES;
+        __allowsSelection = YES;
+        __allowsEmptySelection = YES;
+        __allowsMultipleSelection = YES;
+        
+        __handleWidth = __overlayBorderWidth * 2.0f;
+        __handleOffset = (__overlayBorderWidth / 2.0f) + 1.0f;
+        
+        __selectedIndexes = [NSMutableIndexSet indexSet];
+        __selectedOverlay = -1;
+        
+        __overlayCache = [NSMutableArray arrayWithCapacity:0];
+    }
+    
+    return self;
+}
 
 - (void)awakeFromNib
 {
@@ -107,29 +147,6 @@ typedef NSUInteger MECorner;
     
     DLog(@"overlayDelegate: %@", __delegate);
 
-    __state = MEIdleState;
-    
-    //default property values:
-    __overlayBackgroundColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
-    __overlayBorderColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f);
-    __overlaySelectionBackgroundColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 0.5f);
-    __overlaySelectionBorderColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 1.0f);
-    __overlayBorderWidth = 3.0f;
-    __allowsCreatingOverlays = YES;
-    __allowsModifyingOverlays = YES;
-    __allowsDeletingOverlays = YES;
-    __allowsOverlappingOverlays = NO;
-    __wantsOverlaySingleClickActions = YES;
-    __wantsOverlayDoubleClickActions = YES;
-    __allowsSelection = YES;
-    __allowsEmptySelection = YES;
-    __allowsMultipleSelection = YES;
-    
-    __handleWidth = __overlayBorderWidth * 2.0f;
-    __handleOffset = (__overlayBorderWidth / 2.0f) + 1.0f;
-    
-    __selectedIndexes = [NSMutableIndexSet indexSet];
-    
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
 }
 
@@ -137,7 +154,7 @@ typedef NSUInteger MECorner;
 {
     __topLayer = [CALayer layer];
     
-    [__topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
+    [__topLayer setFrame:NSMakeRect(0.0f, 0.0f, [self imageSize].width, [self imageSize].height)];
     [__topLayer setName:@"topLayer"];
     
     [self reloadData];
@@ -151,21 +168,38 @@ typedef NSUInteger MECorner;
     [self setOverlay:__topLayer forType:IKOverlayTypeImage];
 }
 
-- (void)reloadData //TODO should be put into the view's normal lifetime
+- (void)reloadData
 {
     DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
     
+    NSUInteger count = [__dataSource numberOfOverlaysInOverlayView:self];
+    
+    DLog(@"Number of overlays to create: %lu", count);
+    
+    __overlayCache = [NSMutableArray arrayWithCapacity:count];
+    for (NSUInteger i = 0; i < count; i++) {
+        [__overlayCache addObject:[__dataSource overlayView:self overlayObjectAtIndex:i]];
+    }
+    
+    [self drawOverlays];
+}
+
+- (void)drawOverlays
+{
+    DLog(@"start");
     [__topLayer setSublayers:[NSArray array]];
     
-    DLog(@"Number of overlays to create: %lu", [__dataSource numberOfOverlaysInOverlayView:self]);
+    if (![self allowsEmptySelection] && [__selectedIndexes count] == 0) {
+        __selectedIndexes = [NSMutableIndexSet indexSetWithIndex:0];
+        __selectedOverlay = 0;
+    }
     
-    //create new layers for each rect in the delegate:
-    for (NSUInteger i = 0; i < [__dataSource numberOfOverlaysInOverlayView:self]; i++) {
+    __weak MEOverlayView *weakSelf = self;
+    [__overlayCache enumerateObjectsUsingBlock:^(id overlayObject, NSUInteger i, BOOL *stop){
+        MEOverlayView *strongSelf = weakSelf;
         DLog(@"Creating layer #%lu", i);
         
-        id overlayObject = [__dataSource overlayView:self overlayObjectAtIndex:i];
-        
-        NSRect rect;
+        NSRect rect = NSZeroRect;
         if ([overlayObject respondsToSelector:@selector(rectValue)]) {
             rect = [overlayObject rectValue];
         } else if ([overlayObject respondsToSelector:@selector(rect)]) {
@@ -181,7 +215,7 @@ typedef NSUInteger MECorner;
             selected = YES;
         }
         
-        CALayer *layer = [self layerWithRect:rect handles:(__state == MEModifyingState) selected:selected];
+        CALayer *layer = [strongSelf layerWithRect:rect handles:(__state == MEModifyingState) selected:selected];
         
         [layer setValue:[NSNumber numberWithInteger:i] forKey:@"MEOverlayNumber"];
         [layer setValue:overlayObject forKey:@"MEOverlayObject"];
@@ -190,16 +224,12 @@ typedef NSUInteger MECorner;
         
         [__topLayer addSublayer:layer];
         
-        NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:[self convertImageRectToViewRect:rect] 
+        NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:[strongSelf convertImageRectToViewRect:rect] 
                                                             options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow) 
                                                               owner:self 
                                                            userInfo:[NSDictionary dictionaryWithObject:layer forKey:@"layer"]];
         [self addTrackingArea:area];
-    }
-    
-    if (![self allowsEmptySelection] && [self numberOfSelectedOverlays] == 0) {
-        [self selectOverlayIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
-    }
+    }];
 }
 
 #pragma mark Deallocation
@@ -275,14 +305,15 @@ typedef NSUInteger MECorner;
 
 - (void)deselectAll:(id)sender
 {
-    __selectedIndexes = [NSIndexSet indexSet];
+    __selectedIndexes = [NSMutableIndexSet indexSet];
 }
 
 #pragma mark Drawing
 
 - (void)viewWillDraw
 {
-    [self reloadData];
+    DLog(@"viewWillDraw");
+    [self drawOverlays];
 }
 
 #pragma mark Mouse events
@@ -325,43 +356,50 @@ typedef NSUInteger MECorner;
         if ([self allowsSelection]) {
             NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
             DLog(@"checking select with %lu", layerNumber);
-            if ([__selectedIndexes containsIndex:layerNumber] && [self allowsEmptySelection]) {
-                DLog(@"deselected");
-                [__selectedIndexes removeIndex:layerNumber];
-                __selectedOverlay = -1;
-            } else if ([self allowsMultipleSelection]) {
-                DLog(@"multiple");
-                [__selectedIndexes addIndex:layerNumber];
-                __selectedOverlay = layerNumber;
+            if ([__selectedIndexes containsIndex:layerNumber]) {
+                if ([__selectedIndexes count] > 1 || [self allowsEmptySelection]) {
+                    DLog(@"deselected");
+                    [__selectedIndexes removeIndex:layerNumber];
+                    __selectedOverlay = -1;
+                }
             } else {
-                DLog(@"changing selection");
-                __selectedIndexes = [NSMutableIndexSet indexSetWithIndex:layerNumber];
-                __selectedOverlay = layerNumber;
+                if ([self allowsMultipleSelection]) {
+                    DLog(@"multiple");
+                    [__selectedIndexes addIndex:layerNumber];
+                } else {
+                    DLog(@"changing selection");
+                    __selectedIndexes = [NSMutableIndexSet indexSetWithIndex:layerNumber];
+                }
             }
+            __selectedOverlay = layerNumber;
             DLog(@"selectedOverlay: %lu selectionIndexes: %@", __selectedOverlay, __selectedIndexes);
+            [self drawOverlays];
         }
-        if ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) {
-        if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
-            SEL theSelector = @selector(overlayView:overlay:singleClicked:);
-            __singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__delegate class] instanceMethodSignatureForSelector:theSelector]];
-            
-            [__singleClickInvocation setSelector:theSelector];
-            [__singleClickInvocation setTarget:__delegate];
-            MEOverlayView *selfRef = self;
-            id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
-            [__singleClickInvocation setArgument:&selfRef atIndex:2];
-            [__singleClickInvocation setArgument:&overlayObject atIndex:3];
-            [__singleClickInvocation setArgument:&theEvent atIndex:4];
-            
-            [__singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
-            //[__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
-        } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
-            DLog(@"Cancelling single click: %@", __singleClickInvocation);
-            [NSRunLoop cancelPreviousPerformRequestsWithTarget:__singleClickInvocation];
-            [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
-        } else {
-            [super mouseUp:theEvent];
-        }
+        if (([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) && [hitLayer valueForKey:@"MEOverlayObject"] != nil) {
+            DLog(@"click!");
+            DLog(@"[self wantsOverlaySingleClickActions]: %d", [self wantsOverlaySingleClickActions]);
+            DLog(@"[self wantsOverlayDoubleClickActions]: %d", [self wantsOverlayDoubleClickActions]);
+            if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
+                SEL theSelector = @selector(overlayView:overlay:singleClicked:);
+                __singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__delegate class] instanceMethodSignatureForSelector:theSelector]];
+                
+                [__singleClickInvocation setSelector:theSelector];
+                [__singleClickInvocation setTarget:__delegate];
+                MEOverlayView *selfRef = self;
+                id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
+                [__singleClickInvocation setArgument:&selfRef atIndex:2];
+                [__singleClickInvocation setArgument:&overlayObject atIndex:3];
+                [__singleClickInvocation setArgument:&theEvent atIndex:4];
+                
+                [__singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
+                //[__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
+            } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
+                DLog(@"Cancelling single click: %@", __singleClickInvocation);
+                [NSRunLoop cancelPreviousPerformRequestsWithTarget:__singleClickInvocation];
+                [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
+            } else {
+                [super mouseUp:theEvent];
+            }
         }
     } else if ((__state == MECreatingState || __state == MEModifyingState) && !pointsAreEqual) {
         [self draggedFrom:__mouseDownPoint to:mouseUpPoint done:YES];
@@ -440,7 +478,7 @@ typedef NSUInteger MECorner;
 - (CGPathRef)newRectPathWithSize:(NSSize)size handles:(BOOL)handles
 {
     CGMutablePathRef path = CGPathCreateMutable();
-    CGPathAddRect(path, NULL, NSMakeRect(0.0, 0.0, size.width, size.height));
+    CGPathAddRect(path, NULL, NSMakeRect(0.0f, 0.0f, size.width, size.height));
     
     if (handles) {
         CGPathAddEllipseInRect(path, NULL, NSMakeRect(-__handleOffset, -__handleOffset, __handleWidth, __handleWidth));
@@ -480,7 +518,9 @@ typedef NSUInteger MECorner;
     CALayer *rootLayer = [self overlayForType:IKOverlayTypeImage];
     CALayer *hitLayer = [rootLayer hitTest:[self convertImagePointToViewPoint:point]];
     
-    DLog(@"hitLayer for obj %@: %@", [hitLayer valueForKey:@"MEOverlayObject"], hitLayer);
+    if (hitLayer != __topLayer) {
+        DLog(@"hitLayer for obj %@: %@", [hitLayer valueForKey:@"MEOverlayObject"], hitLayer);
+    }
     
     return hitLayer;
 }

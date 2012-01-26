@@ -30,23 +30,26 @@
         }
         
         NSLog(@"Created rects: %@", overlays);
-        
-        //some examples
-        [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
-        [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
-        [overlayView setOverlayBorderWidth:3.0f];
-        [overlayView setAllowsCreatingOverlays:YES];
-        [overlayView setAllowsModifyingOverlays:YES];
-        [overlayView setAllowsDeletingOverlays:YES];
-        [overlayView setAllowsOverlappingOverlays:NO];
-        [overlayView setWantsOverlaySingleClickActions:YES];
-        [overlayView setWantsOverlaySingleClickActions:YES];
-        
-        [overlayView setAllowsSelection:YES];
-        [overlayView setAllowsEmptySelection:NO];
     }
     
     return self;
+}
+
+- (void)awakeFromNib
+{
+    //some examples
+    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0, 0, 1, 0.5)];
+    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0, 0, 1, 1)];
+    [overlayView setOverlayBorderWidth:3.0f];
+    [overlayView setAllowsCreatingOverlays:YES];
+    [overlayView setAllowsModifyingOverlays:YES];
+    [overlayView setAllowsDeletingOverlays:YES];
+    [overlayView setAllowsOverlappingOverlays:NO];
+    [overlayView setWantsOverlaySingleClickActions:NO];
+    [overlayView setWantsOverlayDoubleClickActions:NO];
+    
+    [overlayView setAllowsSelection:YES];
+    [overlayView setAllowsEmptySelection:NO];
 }
 
 #pragma mark MEOverlayViewDataSource
