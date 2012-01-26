@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'MEOverlayView' target in the 'MEOverlayView' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

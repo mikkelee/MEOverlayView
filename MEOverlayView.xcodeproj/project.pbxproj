@@ -1,0 +1,469 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3E08339914D0818100AE31C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E08339814D0818100AE31C2 /* Cocoa.framework */; };
+		3E0833A314D0818100AE31C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833A114D0818100AE31C2 /* InfoPlist.strings */; };
+		3E0833A514D0818100AE31C2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833A414D0818100AE31C2 /* main.m */; };
+		3E0833A914D0818100AE31C2 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833A714D0818100AE31C2 /* Credits.rtf */; };
+		3E0833AC14D0818100AE31C2 /* MEAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833AB14D0818100AE31C2 /* MEAppDelegate.m */; };
+		3E0833AF14D0818100AE31C2 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833AD14D0818100AE31C2 /* MainMenu.xib */; };
+		3E0833B714D0818100AE31C2 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E0833B614D0818100AE31C2 /* SenTestingKit.framework */; };
+		3E0833B814D0818100AE31C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E08339814D0818100AE31C2 /* Cocoa.framework */; };
+		3E0833C014D0818100AE31C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833BE14D0818100AE31C2 /* InfoPlist.strings */; };
+		3E0833C314D0818100AE31C2 /* MEOverlayViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833C214D0818100AE31C2 /* MEOverlayViewTests.m */; };
+		3E0833CF14D0854900AE31C2 /* MEOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833CE14D0854900AE31C2 /* MEOverlayView.m */; };
+		3E0833D114D097B100AE31C2 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E0833D014D097B100AE31C2 /* Quartz.framework */; };
+		3E0833D314D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833D214D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg */; };
+		3E0833D814D0B41D00AE31C2 /* MEOverlayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3E0833B914D0818100AE31C2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3E08338B14D0818000AE31C2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3E08339314D0818100AE31C2;
+			remoteInfo = MEOverlayView;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3E08339414D0818100AE31C2 /* MEOverlayView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MEOverlayView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E08339814D0818100AE31C2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		3E08339B14D0818100AE31C2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		3E08339C14D0818100AE31C2 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		3E08339D14D0818100AE31C2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		3E0833A014D0818100AE31C2 /* MEOverlayView-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MEOverlayView-Info.plist"; sourceTree = "<group>"; };
+		3E0833A214D0818100AE31C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3E0833A414D0818100AE31C2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3E0833A614D0818100AE31C2 /* MEOverlayView-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MEOverlayView-Prefix.pch"; sourceTree = "<group>"; };
+		3E0833A814D0818100AE31C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		3E0833AA14D0818100AE31C2 /* MEAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MEAppDelegate.h; sourceTree = "<group>"; };
+		3E0833AB14D0818100AE31C2 /* MEAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MEAppDelegate.m; sourceTree = "<group>"; };
+		3E0833AE14D0818100AE31C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		3E0833B514D0818100AE31C2 /* MEOverlayViewTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MEOverlayViewTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E0833B614D0818100AE31C2 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		3E0833BD14D0818100AE31C2 /* MEOverlayViewTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MEOverlayViewTests-Info.plist"; sourceTree = "<group>"; };
+		3E0833BF14D0818100AE31C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3E0833C214D0818100AE31C2 /* MEOverlayViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MEOverlayViewTests.m; sourceTree = "<group>"; };
+		3E0833CD14D0854900AE31C2 /* MEOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MEOverlayView.h; sourceTree = "<group>"; };
+		3E0833CE14D0854900AE31C2 /* MEOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MEOverlayView.m; sourceTree = "<group>"; };
+		3E0833D014D097B100AE31C2 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		3E0833D214D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "royalty-free-food-image-cabbage.jpg"; sourceTree = "<group>"; };
+		3E0833D614D0B41D00AE31C2 /* MEOverlayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MEOverlayController.h; sourceTree = "<group>"; };
+		3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MEOverlayController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3E08339114D0818100AE31C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E0833D114D097B100AE31C2 /* Quartz.framework in Frameworks */,
+				3E08339914D0818100AE31C2 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0833B114D0818100AE31C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E0833B714D0818100AE31C2 /* SenTestingKit.framework in Frameworks */,
+				3E0833B814D0818100AE31C2 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3E08338914D0818000AE31C2 = {
+			isa = PBXGroup;
+			children = (
+				3E08339E14D0818100AE31C2 /* MEOverlayView */,
+				3E0833BB14D0818100AE31C2 /* MEOverlayViewTests */,
+				3E08339714D0818100AE31C2 /* Frameworks */,
+				3E08339514D0818100AE31C2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E08339514D0818100AE31C2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3E08339414D0818100AE31C2 /* MEOverlayView.app */,
+				3E0833B514D0818100AE31C2 /* MEOverlayViewTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3E08339714D0818100AE31C2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3E0833D014D097B100AE31C2 /* Quartz.framework */,
+				3E08339814D0818100AE31C2 /* Cocoa.framework */,
+				3E0833B614D0818100AE31C2 /* SenTestingKit.framework */,
+				3E08339A14D0818100AE31C2 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3E08339A14D0818100AE31C2 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3E08339B14D0818100AE31C2 /* AppKit.framework */,
+				3E08339C14D0818100AE31C2 /* CoreData.framework */,
+				3E08339D14D0818100AE31C2 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		3E08339E14D0818100AE31C2 /* MEOverlayView */ = {
+			isa = PBXGroup;
+			children = (
+				3E0833AA14D0818100AE31C2 /* MEAppDelegate.h */,
+				3E0833AB14D0818100AE31C2 /* MEAppDelegate.m */,
+				3E0833AD14D0818100AE31C2 /* MainMenu.xib */,
+				3E0833CD14D0854900AE31C2 /* MEOverlayView.h */,
+				3E0833CE14D0854900AE31C2 /* MEOverlayView.m */,
+				3E0833D614D0B41D00AE31C2 /* MEOverlayController.h */,
+				3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */,
+				3E08339F14D0818100AE31C2 /* Supporting Files */,
+			);
+			path = MEOverlayView;
+			sourceTree = "<group>";
+		};
+		3E08339F14D0818100AE31C2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				3E0833D214D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg */,
+				3E0833A014D0818100AE31C2 /* MEOverlayView-Info.plist */,
+				3E0833A114D0818100AE31C2 /* InfoPlist.strings */,
+				3E0833A414D0818100AE31C2 /* main.m */,
+				3E0833A614D0818100AE31C2 /* MEOverlayView-Prefix.pch */,
+				3E0833A714D0818100AE31C2 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		3E0833BB14D0818100AE31C2 /* MEOverlayViewTests */ = {
+			isa = PBXGroup;
+			children = (
+				3E0833C214D0818100AE31C2 /* MEOverlayViewTests.m */,
+				3E0833BC14D0818100AE31C2 /* Supporting Files */,
+			);
+			path = MEOverlayViewTests;
+			sourceTree = "<group>";
+		};
+		3E0833BC14D0818100AE31C2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				3E0833BD14D0818100AE31C2 /* MEOverlayViewTests-Info.plist */,
+				3E0833BE14D0818100AE31C2 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3E08339314D0818100AE31C2 /* MEOverlayView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0833C614D0818100AE31C2 /* Build configuration list for PBXNativeTarget "MEOverlayView" */;
+			buildPhases = (
+				3E08339014D0818100AE31C2 /* Sources */,
+				3E08339114D0818100AE31C2 /* Frameworks */,
+				3E08339214D0818100AE31C2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MEOverlayView;
+			productName = MEOverlayView;
+			productReference = 3E08339414D0818100AE31C2 /* MEOverlayView.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3E0833B414D0818100AE31C2 /* MEOverlayViewTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0833C914D0818100AE31C2 /* Build configuration list for PBXNativeTarget "MEOverlayViewTests" */;
+			buildPhases = (
+				3E0833B014D0818100AE31C2 /* Sources */,
+				3E0833B114D0818100AE31C2 /* Frameworks */,
+				3E0833B214D0818100AE31C2 /* Resources */,
+				3E0833B314D0818100AE31C2 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3E0833BA14D0818100AE31C2 /* PBXTargetDependency */,
+			);
+			name = MEOverlayViewTests;
+			productName = MEOverlayViewTests;
+			productReference = 3E0833B514D0818100AE31C2 /* MEOverlayViewTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3E08338B14D0818000AE31C2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Mikkel Eide Eriksen";
+			};
+			buildConfigurationList = 3E08338E14D0818000AE31C2 /* Build configuration list for PBXProject "MEOverlayView" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 3E08338914D0818000AE31C2;
+			productRefGroup = 3E08339514D0818100AE31C2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3E08339314D0818100AE31C2 /* MEOverlayView */,
+				3E0833B414D0818100AE31C2 /* MEOverlayViewTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3E08339214D0818100AE31C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E0833A314D0818100AE31C2 /* InfoPlist.strings in Resources */,
+				3E0833A914D0818100AE31C2 /* Credits.rtf in Resources */,
+				3E0833AF14D0818100AE31C2 /* MainMenu.xib in Resources */,
+				3E0833D314D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0833B214D0818100AE31C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E0833C014D0818100AE31C2 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3E0833B314D0818100AE31C2 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3E08339014D0818100AE31C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E0833A514D0818100AE31C2 /* main.m in Sources */,
+				3E0833AC14D0818100AE31C2 /* MEAppDelegate.m in Sources */,
+				3E0833CF14D0854900AE31C2 /* MEOverlayView.m in Sources */,
+				3E0833D814D0B41D00AE31C2 /* MEOverlayController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0833B014D0818100AE31C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E0833C314D0818100AE31C2 /* MEOverlayViewTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3E0833BA14D0818100AE31C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3E08339314D0818100AE31C2 /* MEOverlayView */;
+			targetProxy = 3E0833B914D0818100AE31C2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		3E0833A114D0818100AE31C2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3E0833A214D0818100AE31C2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		3E0833A714D0818100AE31C2 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3E0833A814D0818100AE31C2 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		3E0833AD14D0818100AE31C2 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3E0833AE14D0818100AE31C2 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		3E0833BE14D0818100AE31C2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3E0833BF14D0818100AE31C2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3E0833C414D0818100AE31C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		3E0833C514D0818100AE31C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		3E0833C714D0818100AE31C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MEOverlayView/MEOverlayView-Prefix.pch";
+				INFOPLIST_FILE = "MEOverlayView/MEOverlayView-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		3E0833C814D0818100AE31C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MEOverlayView/MEOverlayView-Prefix.pch";
+				INFOPLIST_FILE = "MEOverlayView/MEOverlayView-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		3E0833CA14D0818100AE31C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MEOverlayView.app/Contents/MacOS/MEOverlayView";
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MEOverlayView/MEOverlayView-Prefix.pch";
+				INFOPLIST_FILE = "MEOverlayViewTests/MEOverlayViewTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		3E0833CB14D0818100AE31C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MEOverlayView.app/Contents/MacOS/MEOverlayView";
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MEOverlayView/MEOverlayView-Prefix.pch";
+				INFOPLIST_FILE = "MEOverlayViewTests/MEOverlayViewTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3E08338E14D0818000AE31C2 /* Build configuration list for PBXProject "MEOverlayView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0833C414D0818100AE31C2 /* Debug */,
+				3E0833C514D0818100AE31C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E0833C614D0818100AE31C2 /* Build configuration list for PBXNativeTarget "MEOverlayView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0833C714D0818100AE31C2 /* Debug */,
+				3E0833C814D0818100AE31C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		3E0833C914D0818100AE31C2 /* Build configuration list for PBXNativeTarget "MEOverlayViewTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0833CA14D0818100AE31C2 /* Debug */,
+				3E0833CB14D0818100AE31C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3E08338B14D0818000AE31C2 /* Project object */;
+}
