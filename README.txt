@@ -9,6 +9,7 @@ Build & run MEOverlayView.app for an example of the functionality.
 All coordinates are in the image's coordinates.
 
 TODO:
+- most important: figure out a good place to put -setupOverlays and don't call it so much, have it be part of the normal life of the view.
 - rework the event sending code (only send actions -- doubleClick, singleClick?)
 - when modifying, prevent moving off-image
 - get better trackingareas (ie only show hand when over an overlay?)
