@@ -102,15 +102,29 @@
     
     [topLayer setSublayers:[NSArray array]];
     
-    DLog(@"Number of overlays to create: %lu", [__delegate numberOfOverlays]);
+    DLog(@"Number of overlays to create: %lu", [__delegate numberOfOverlaysInOverlayView:self]);
     
     //create new layers for each rect in the delegate:
-    for (NSUInteger i = 0; i < [__delegate numberOfOverlays]; i++) {
+    for (NSUInteger i = 0; i < [__delegate numberOfOverlaysInOverlayView:self]; i++) {
         DLog(@"Creating layer #%lu", i);
         
-        CALayer *layer = [self layerWithRect:[__delegate rectForOverlay:i]];
+        id overlayObject = [__delegate overlayView:self overlayObjectAtIndex:i];
+        
+        NSRect rect;
+        if ([overlayObject respondsToSelector:@selector(rectValue)]) {
+            rect = [overlayObject rectValue];
+        } else if ([overlayObject respondsToSelector:@selector(rect)]) {
+            rect = [overlayObject rect];
+        } else {
+            @throw [NSException exceptionWithName:@"MEOverlayObjectHasNoRect"
+                                           reason:@"Objects given to MEOverlayView must respond to -(NSRect)rectValue or -(NSRect)rect"
+                                         userInfo:nil];
+        }
+        
+        CALayer *layer = [self layerWithRect:rect];
         
         [layer setValue:[NSNumber numberWithInteger:i] forKey:@"MEOverlayNumber"];
+        [layer setValue:overlayObject forKey:@"MEOverlayObject"];
         
         DLog(@"Created layer: %@", layer);
         
@@ -173,11 +187,11 @@
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     NSUInteger overlayNum = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
     
-    if (state == MEDeletingState && [__delegate allowsDeletingOverlays]) {
-        [__delegate didDeleteOverlay:overlayNum];
+    if (state == MEDeletingState && [__delegate allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
+        [__delegate didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
         [self refreshOverlays];
-    } else if (state == MEIdleState && [__delegate wantsEventsForOverlays]) {
-        [__delegate overlay:overlayNum receivedEvent:theEvent];
+    } else if (state == MEIdleState && [__delegate wantsEventsForOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
+        [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] receivedEvent:theEvent];
     } else if ((state == MECreatingState || state == MEModifyingState) && !pointsAreEqual) {
         [self draggedFrom:mouseDownPoint to:mouseUpPoint done:YES];
     } else {
@@ -299,7 +313,7 @@
         DLog(@"modifying");
         if (draggingLayer == nil) {
             CALayer *hitLayer = [self layerAtPoint:mouseDownPoint];
-            if (hitLayer == topLayer) {
+            if (hitLayer == topLayer || [hitLayer valueForKey:@"MEOverlayObject"] == nil) {
                 return;
             }
             draggingLayer = hitLayer;
@@ -336,7 +350,7 @@
         
         if (done) {
             DLog(@"done modifying #%lu: %@", overlayNum, NSStringFromRect([draggingLayer frame]));
-            [__delegate didModifyOverlay:overlayNum newRect:[draggingLayer frame]];
+            [__delegate didModifyOverlay:[draggingLayer valueForKey:@"MEOverlayObject"] newRect:[draggingLayer frame]];
             draggingLayer = nil;
             [self refreshOverlays];
             [[NSCursor openHandCursor] set];

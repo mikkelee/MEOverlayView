@@ -14,11 +14,14 @@
  
  */
 
+@class MEOverlayView;
+
 @protocol MEOverlayViewDelegate <NSObject>
 
 @required
-- (NSUInteger)numberOfOverlays;
-- (NSRect)rectForOverlay:(NSUInteger)num;
+- (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
+- (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
+    //overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
 
 @optional
 
@@ -33,12 +36,12 @@
 - (BOOL)allowsOverlappingOverlays; //note: A bit finicky, if the mouse moves "fast", it stops well before overlapping.
 
 - (void)didCreateOverlay:(NSRect)rect;
-- (void)didModifyOverlay:(NSUInteger)num newRect:(NSRect)rect;
-- (void)didDeleteOverlay:(NSUInteger)num;
+- (void)didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
+- (void)didDeleteOverlay:(id)overlayObject;
 
 // TODO: should probably have better names:
 - (BOOL)wantsEventsForOverlays;
-- (void)overlay:(NSUInteger)num receivedEvent:(NSEvent *)event;
+- (void)overlay:(id)overlayObject receivedEvent:(NSEvent *)event;
 
 
 @end
