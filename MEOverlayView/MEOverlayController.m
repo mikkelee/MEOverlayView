@@ -114,12 +114,17 @@
      */
 }
 
-- (BOOL)wantsEventsForOverlays
+- (BOOL)wantsOverlayActions
 {
     return YES;
 }
 
-- (void)overlay:(id)overlayObject receivedEvent:(NSEvent *)event
+- (void)overlay:(id)overlayObject singleClicked:(NSEvent *)event
+{
+    NSLog(@"overlay %@ received %@", overlayObject, event);
+}
+
+- (void)overlay:(id)overlayObject doubleClicked:(NSEvent *)event
 {
     NSLog(@"overlay %@ received %@", overlayObject, event);
 }

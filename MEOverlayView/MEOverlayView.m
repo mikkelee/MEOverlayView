@@ -189,8 +189,14 @@
     if (state == MEDeletingState && [__delegate allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         [__delegate didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
         [self refreshOverlays];
-    } else if (state == MEIdleState && [__delegate wantsEventsForOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
-        [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] receivedEvent:theEvent];
+    } else if (state == MEIdleState && [__delegate wantsOverlayActions] && [hitLayer valueForKey:@"MEOverlayObject"]) {
+        if ([theEvent clickCount] == 1) {
+            [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
+        } else if ([theEvent clickCount] == 2) {
+            [__delegate overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
+        } else {
+            [super mouseUp:theEvent];
+        }
     } else if ((state == MECreatingState || state == MEModifyingState) && !pointsAreEqual) {
         [self draggedFrom:mouseDownPoint to:mouseUpPoint done:YES];
     } else {
@@ -240,7 +246,7 @@
     CALayer *rootLayer = [self overlayForType:IKOverlayTypeImage];
     CALayer *hitLayer = [rootLayer hitTest:[self convertImagePointToViewPoint:point]];
     
-    DLog(@"hitLayer #%lu: %@", [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue], hitLayer);
+    DLog(@"hitLayer for obj %@: %@", [hitLayer valueForKey:@"MEOverlayObject"], hitLayer);
     
     return hitLayer;
 }
@@ -276,7 +282,6 @@
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done
 {
     DLog(@"from %@ to %@", NSStringFromPoint(startPoint), NSStringFromPoint(endPoint));
-    
     
     if (state == MECreatingState && [__delegate allowsCreatingOverlays]) {
         DLog(@"creating");
@@ -322,7 +327,6 @@
             DLog(@"xOffset: %f yOffset: %f", xOffset, yOffset);
         }
         [[NSCursor closedHandCursor] set];
-        NSUInteger overlayNum = [[draggingLayer valueForKey:@"MEOverlayNumber"] integerValue];
         
         NSPoint pos = [draggingLayer position];
         
@@ -348,7 +352,7 @@
         }
         
         if (done) {
-            DLog(@"done modifying #%lu: %@", overlayNum, NSStringFromRect([draggingLayer frame]));
+            DLog(@"done modifying %@: %@", [draggingLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([draggingLayer frame]));
             [__delegate didModifyOverlay:[draggingLayer valueForKey:@"MEOverlayObject"] newRect:[draggingLayer frame]];
             draggingLayer = nil;
             [self refreshOverlays];

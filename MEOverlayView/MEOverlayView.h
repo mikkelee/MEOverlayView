@@ -39,9 +39,9 @@
 - (void)didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
 - (void)didDeleteOverlay:(id)overlayObject;
 
-// TODO: should probably have better names:
-- (BOOL)wantsEventsForOverlays;
-- (void)overlay:(id)overlayObject receivedEvent:(NSEvent *)event;
+- (BOOL)wantsOverlayActions;
+- (void)overlay:(id)overlayObject singleClicked:(NSEvent *)event;
+- (void)overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
 
 
 @end
