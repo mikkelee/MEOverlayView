@@ -62,6 +62,7 @@ typedef NSUInteger MEState;
 @property BOOL allowsModifyingOverlays; //default YES
 @property BOOL allowsDeletingOverlays; //default YES
 @property BOOL allowsOverlappingOverlays; //default NO (note: somewhat finicky when mouse is moving "fast")
-@property BOOL wantsOverlayActions; //default YES
+@property BOOL wantsOverlaySingleClickActions; //default YES
+@property BOOL wantsOverlayDoubleClickActions; //default YES
 
 @end

@@ -39,7 +39,8 @@
         [overlayView setAllowsModifyingOverlays:YES];
         [overlayView setAllowsDeletingOverlays:YES];
         [overlayView setAllowsOverlappingOverlays:NO];
-        [overlayView setWantsOverlayActions:YES];
+        [overlayView setWantsOverlaySingleClickActions:YES];
+        [overlayView setWantsOverlaySingleClickActions:YES];
     }
     
     return self;

@@ -70,7 +70,8 @@ typedef NSUInteger MECorner;
     BOOL __allowsModifyingOverlays;
     BOOL __allowsDeletingOverlays;
     BOOL __allowsOverlappingOverlays;
-    BOOL __wantsOverlayActions;
+    BOOL __wantsOverlaySingleClickActions;
+    BOOL __wantsOverlayDoubleClickActions;
     
     //internal helper ivars
     CGFloat handleWidth;
@@ -108,7 +109,8 @@ typedef NSUInteger MECorner;
     __allowsModifyingOverlays = YES;
     __allowsDeletingOverlays = YES;
     __allowsOverlappingOverlays = NO;
-    __wantsOverlayActions = YES;
+    __wantsOverlaySingleClickActions = YES;
+    __wantsOverlayDoubleClickActions = YES;
     
     handleWidth = __borderWidth * 2.0f;
     handleOffset = (__borderWidth / 2.0f) + 1.0f;
@@ -249,10 +251,10 @@ typedef NSUInteger MECorner;
     
     if (state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         [__delegate overlayView:self didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
-    } else if (state == MEIdleState && [self wantsOverlayActions] && [hitLayer valueForKey:@"MEOverlayObject"]) {
-        if ([theEvent clickCount] == 1) {
+    } else if (state == MEIdleState && ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) && [hitLayer valueForKey:@"MEOverlayObject"]) {
+        if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
             [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
-        } else if ([theEvent clickCount] == 2) {
+        } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
             [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
         } else {
             [super mouseUp:theEvent];
@@ -561,6 +563,7 @@ typedef NSUInteger MECorner;
 @synthesize allowsModifyingOverlays = __allowsModifyingOverlays;
 @synthesize allowsDeletingOverlays = __allowsDeletingOverlays;
 @synthesize allowsOverlappingOverlays = __allowsOverlappingOverlays;
-@synthesize wantsOverlayActions = __wantsOverlayActions;
+@synthesize wantsOverlaySingleClickActions = __wantsOverlaySingleClickActions;
+@synthesize wantsOverlayDoubleClickActions = __wantsOverlayDoubleClickActions;
 
 @end
