@@ -51,6 +51,8 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 * Tracking Areas: Can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
 
+* The resize cursors are loaded from hardcoded paths in WebCore.framework since NSCursor apparently doesn't supply these per default.
+
 -----------------------------------------------------------------------------------------------
 
 Pic of cabbage is from:
