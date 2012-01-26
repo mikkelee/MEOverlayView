@@ -32,7 +32,6 @@ typedef NSUInteger MECorner;
 
 //initialization
 - (void)initialSetup;
-- (void)refreshOverlays;
 
 //helpers
 - (void)setMouseForPoint:(NSPoint)point;
@@ -124,7 +123,7 @@ typedef NSUInteger MECorner;
     [topLayer setFrame:NSMakeRect(0, 0, [self imageSize].width, [self imageSize].height)];
     [topLayer setName:@"topLayer"];
     
-    [self refreshOverlays];
+    [self reloadData];
     
     NSTrackingArea *fullArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect 
                                                             options:(NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect) 
@@ -135,7 +134,7 @@ typedef NSUInteger MECorner;
     [self setOverlay:topLayer forType:IKOverlayTypeImage];
 }
 
-- (void)refreshOverlays //TODO should be put into the view's normal lifetime
+- (void)reloadData //TODO should be put into the view's normal lifetime
 {
     DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
     
@@ -177,7 +176,7 @@ typedef NSUInteger MECorner;
     }
 }
 
-#pragma mark State
+#pragma mark Deallocation
 
 - (void)dealloc
 {
@@ -211,7 +210,7 @@ typedef NSUInteger MECorner;
 
 - (void)viewWillDraw
 {
-    [self refreshOverlays];
+    [self reloadData];
 }
 
 #pragma mark Mouse events
@@ -250,7 +249,6 @@ typedef NSUInteger MECorner;
     
     if (state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         [__delegate overlayView:self didDeleteOverlay:[hitLayer valueForKey:@"MEOverlayObject"]];
-        [self refreshOverlays];
     } else if (state == MEIdleState && [self wantsOverlayActions] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([theEvent clickCount] == 1) {
             [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
@@ -471,7 +469,6 @@ typedef NSUInteger MECorner;
             [__delegate overlayView:self didCreateOverlay:[activeLayer frame]];
             [activeLayer removeFromSuperlayer];
             activeLayer = nil;
-            [self refreshOverlays];
         }
     } else if (state == MEModifyingState && [self allowsModifyingOverlays]) {
         DLog(@"modifying");
@@ -544,7 +541,6 @@ typedef NSUInteger MECorner;
             DLog(@"done modifying %@: %@", [activeLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([activeLayer frame]));
             [__delegate overlayView:self didModifyOverlay:[activeLayer valueForKey:@"MEOverlayObject"] newRect:[activeLayer frame]];
             activeLayer = nil;
-            [self refreshOverlays];
             [[NSCursor openHandCursor] set];
         }
     }

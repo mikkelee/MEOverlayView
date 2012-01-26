@@ -13,6 +13,8 @@
     NSMutableArray *overlays;
 }
 
+#pragma mark Initialization
+
 - (id) init
 {
     self = [super init];
@@ -38,15 +40,12 @@
         [overlayView setAllowsDeletingOverlays:YES];
         [overlayView setAllowsOverlappingOverlays:NO];
         [overlayView setWantsOverlayActions:YES];
-        
-        //to check if viewWillDraw refreshes the overlays properly:
-        [overlays performSelector:@selector(addObject:) 
-                       withObject:[NSValue valueWithRect:NSMakeRect(20.0f, 20.0f, 540.0f, 20.0f)] 
-                       afterDelay:10.0f];
     }
     
     return self;
 }
+
+#pragma mark MEOverlayViewDataSource
 
 - (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView
 {
@@ -58,6 +57,8 @@
     return [overlays objectAtIndex:num];
 }
 
+#pragma mark MEOverlayViewDelegate
+
 - (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect
 {
     NSLog(@"overlay created: %@", NSStringFromRect(rect));
@@ -66,6 +67,7 @@
     /*
      Do whatever else you feel like here... 
      */
+    [overlayView reloadData];
 }
 
 - (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect
@@ -79,6 +81,7 @@
      In reality you wouldn't delete/replace, but modify the actual object you're given. 
      I'm just doing it like this here because I'm using NSValues in the example.
      */
+    [overlayView reloadData];
 }
 
 - (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject
@@ -90,17 +93,28 @@
      Do whatever else you feel like here... 
      Naturally you can run some extra logic and decide not to delete the object if you want/need to.
      */
+    [overlayView reloadData];
 }
 
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event
 {
     NSLog(@"overlay %@ received %@", overlayObject, event);
+    /*
+     Do whatever else you feel like here... 
+     */
+    [overlayView reloadData];
 }
 
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event
 {
     NSLog(@"overlay %@ received %@", overlayObject, event);
+    /*
+     Do whatever else you feel like here... 
+     */
+    [overlayView reloadData];
 }
+
+#pragma mark User interface
 
 - (IBAction)logCurrentOverlays:(id)sender
 {

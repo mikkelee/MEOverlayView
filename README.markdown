@@ -6,7 +6,7 @@ A subclass of IKImageView that allows you to set an an overlayDataSource and an 
 
 The data source supplies objects (that respond to -rect or -rectValue) which the overlay will draw on top of the image it's currently displaying.
 
-The delegate is in turn told when an overlay was created/modified/deleted, depending on what allowances have been set up. Additionally, mouseclicks (single / double) can be supplied to the delegate.
+The delegate is in turn told when an overlay was created/modified/deleted, depending on what allowances have been set up. Additionally, mouseclicks (single / double) can be supplied to the delegate. The delegate can then call back with -reloadData if things have changed.
 
 I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
 

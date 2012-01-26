@@ -49,6 +49,7 @@ typedef NSUInteger MEState;
 @interface MEOverlayView :IKImageView
 
 - (BOOL)enterState:(MEState)_state; //returns success of state change (depending on allowance properties)
+- (void)reloadData;
 
 @property (weak) IBOutlet id overlayDelegate;
 @property (strong) IBOutlet id overlayDataSource;
