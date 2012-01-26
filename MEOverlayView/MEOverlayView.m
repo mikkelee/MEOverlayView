@@ -22,7 +22,7 @@
 
 //helpers
 - (NSPoint)convertWindowPointToImagePoint:(NSPoint)windowPoint;
-- (CALayer *)layerWithRect:(NSRect)rect;
+- (CAShapeLayer *)layerWithRect:(NSRect)rect withHandles:(BOOL)handles;
 - (CALayer *)layerAtPoint:(NSPoint)point;
 - (BOOL)isRect:(NSRect)rect validForLayer:(CALayer *)_layer;
 - (void)draggedFrom:(NSPoint)startPoint to:(NSPoint)endPoint done:(BOOL)done;
@@ -50,7 +50,7 @@
     NSPoint mouseDownPoint;
     
     //temp vals
-    CALayer *creatingLayer;
+    CAShapeLayer *creatingLayer;
     CALayer *draggingLayer;
     CGFloat xOffset;
     CGFloat yOffset;
@@ -119,7 +119,7 @@
                                          userInfo:nil];
         }
         
-        CALayer *layer = [self layerWithRect:rect];
+        CALayer *layer = [self layerWithRect:rect withHandles:(state == MEModifyingState)];
         
         [layer setValue:[NSNumber numberWithInteger:i] forKey:@"MEOverlayNumber"];
         [layer setValue:overlayObject forKey:@"MEOverlayObject"];
@@ -144,6 +144,7 @@
     } else {
         DLog(@"%lu => %lu", state, _state);
         state = _state;
+        [self setNeedsDisplay:YES];
         return YES;
     }
 }
@@ -235,16 +236,34 @@
     return imagePoint;
 }
 
-- (CALayer *)layerWithRect:(NSRect)rect
+- (CGPathRef)rectPathWithSize:(NSSize)size handles:(BOOL)handles
 {
-    CALayer *layer = [CALayer layer];
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathAddRect(path, NULL, NSMakeRect(0.0, 0.0, size.width, size.height));
+    
+    if (handles) {
+        CGFloat handleWidth = __borderWidth * 2.0f;
+        CGFloat handleOffset = (__borderWidth / 2.0f) + 1.0f;
+        
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(-handleOffset, -handleOffset, handleWidth, handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(-handleOffset, size.height - handleOffset, handleWidth, handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - handleOffset, -handleOffset, handleWidth, handleWidth));
+        CGPathAddEllipseInRect(path, NULL, NSMakeRect(size.width - handleOffset, size.height - handleOffset, handleWidth, handleWidth));
+    }
+    
+    return path;
+}
+
+- (CAShapeLayer *)layerWithRect:(NSRect)rect withHandles:(BOOL)handles
+{
+    CAShapeLayer *layer = [CAShapeLayer layer];
     
     [layer setFrame:rect];
-    //[layer setAnchorPoint:CGPointMake(0.0f, 0.0f)];
+    [layer setPath:[self rectPathWithSize:rect.size handles:handles]];
     
-    [layer setBackgroundColor:__backgroundColor];
-    [layer setBorderWidth:__borderWidth];
-    [layer setBorderColor:__borderColor];
+    [layer setFillColor:__backgroundColor];
+    [layer setLineWidth:__borderWidth];
+    [layer setStrokeColor:__borderColor];
     
     return layer;
 }
@@ -294,7 +313,7 @@
     if (state == MECreatingState && [self allowsCreatingOverlays]) {
         DLog(@"creating");
         if (creatingLayer == nil) {
-            creatingLayer = [self layerWithRect:NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f)];
+            creatingLayer = [self layerWithRect:NSMakeRect(0.0f, 0.0f, 0.0f, 0.0f) withHandles:YES];
             
             [topLayer addSublayer:creatingLayer];
         }
@@ -305,12 +324,13 @@
         NSSize size = NSMakeSize(end.x - origin.x, end.y - origin.y);
         NSRect imageRect = NSMakeRect(origin.x, origin.y, size.width, size.height);
         
-        BOOL validLocation = [self isRect:imageRect validForLayer:draggingLayer];
+        BOOL validLocation = [self isRect:imageRect validForLayer:creatingLayer];
         
         if (validLocation) {
             [CATransaction begin];
             [CATransaction setAnimationDuration:0.0f];
             [creatingLayer setFrame:imageRect];
+            [creatingLayer setPath:[self rectPathWithSize:imageRect.size handles:YES]];
             [CATransaction commit];
         }
         
