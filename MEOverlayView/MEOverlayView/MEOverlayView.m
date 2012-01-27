@@ -192,11 +192,11 @@ typedef NSUInteger MECorner;
 - (void)drawOverlays
 {
     DLog(@"start");
-    [__topLayer setSublayers:[NSArray array]];
-    
     if (![self allowsEmptyOverlaySelection] && [__selectedOverlays count] == 0 && [__overlayCache count] > 0) {
         __selectedOverlays = [NSMutableArray arrayWithObject:[__overlayCache lastObject]];
     }
+    
+    NSMutableArray *tmpLayers = [NSMutableArray arrayWithCapacity:[__overlayCache count]];
     
     __weak MEOverlayView *weakSelf = self;
     [__overlayCache enumerateObjectsUsingBlock:^(id overlayObject, NSUInteger i, BOOL *stop){
@@ -223,14 +223,18 @@ typedef NSUInteger MECorner;
         
         DLog(@"Created layer: %@", layer);
         
-        [__topLayer addSublayer:layer];
-        
         NSTrackingArea *area = [[NSTrackingArea alloc] initWithRect:[strongSelf convertImageRectToViewRect:rect] 
                                                             options:(NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingCursorUpdate | NSTrackingActiveInKeyWindow) 
                                                               owner:self 
                                                            userInfo:[NSDictionary dictionaryWithObject:layer forKey:@"layer"]];
         [self addTrackingArea:area];
+        [layer setValue:area forKey:@"MEOverlayTrackingArea"];
+        
+        [tmpLayers addObject:layer];
     }];
+    
+    //switcheroo:
+    [__topLayer setSublayers:tmpLayers];
 }
 
 #pragma mark Deallocation
@@ -349,6 +353,7 @@ typedef NSUInteger MECorner;
         id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
         [__overlayDelegate overlayView:self didDeleteOverlay:overlayObject];
         [__selectedOverlays removeObject:overlayObject];
+        [self removeTrackingArea:[hitLayer valueForKey:@"MEOverlayTrackingArea"]];
     } else if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"]) {
         if ([self allowsOverlaySelection]) {
             NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
