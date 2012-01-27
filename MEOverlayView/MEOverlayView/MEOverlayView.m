@@ -311,14 +311,6 @@ typedef NSUInteger MECorner;
     __selectedOverlays = [NSMutableArray arrayWithCapacity:2];
 }
 
-#pragma mark Drawing
-
-- (void)viewWillDraw
-{
-    DLog(@"viewWillDraw");
-    [self drawOverlays];
-}
-
 #pragma mark Mouse events
 
 - (void)mouseDown:(NSEvent *)theEvent
