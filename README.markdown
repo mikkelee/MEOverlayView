@@ -34,6 +34,7 @@ The protocols as of Jan. 26, 2012:
     
     - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
     - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
+    - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event;
     
     @end
 
@@ -51,9 +52,17 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 * Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay)
 
-* Tracking Areas: Can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
+## Ugliness ##
 
-* The resize cursors are loaded from hardcoded paths in WebCore.framework since NSCursor apparently doesn't supply these per default.
+* Tracking Areas/cursorRects: I can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
+
+* The resize cursors are loaded from hardcoded paths in WebCore.framework since NSCursor apparently doesn't supply these per default. It's not very nice, but I didn't want to add make the view depend on extra files (and presumably everybody has WebCore installed).
+
+## Nice to have ##
+
+* Default allows<x> settings could probably be better.
+
+* AppleDoc documentation
 
 -----------------------------------------------------------------------------------------------
 

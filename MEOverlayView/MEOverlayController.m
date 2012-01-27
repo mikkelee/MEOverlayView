@@ -128,6 +128,15 @@
     [overlayView reloadData];
 }
 
+- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event
+{
+    NSLog(@"overlay %@ rightClicked: %@", overlayObject, event);
+    /*
+     Do whatever else you feel like here... 
+     */
+    [overlayView reloadData];
+}
+
 #pragma mark User interface
 
 - (IBAction)logCurrentOverlays:(id)sender

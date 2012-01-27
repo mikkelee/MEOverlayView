@@ -32,6 +32,7 @@
 
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
+- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event;
 
 @end
 
@@ -76,6 +77,7 @@ typedef NSUInteger MEState;
 
 @property BOOL wantsOverlaySingleClickActions; //default YES
 @property BOOL wantsOverlayDoubleClickActions; //default YES
+@property BOOL wantsOverlayRightClickActions; //default YES
 
 @property BOOL allowsSelection; //default YES
 @property BOOL allowsEmptySelection; //default YES

@@ -69,12 +69,16 @@ typedef NSUInteger MECorner;
     CGColorRef __overlaySelectionBackgroundColor;
     CGColorRef __overlaySelectionBorderColor;
     CGFloat __overlayBorderWidth;
+    
     BOOL __allowsCreatingOverlays;
     BOOL __allowsModifyingOverlays;
     BOOL __allowsDeletingOverlays;
     BOOL __allowsOverlappingOverlays;
+    
     BOOL __wantsOverlaySingleClickActions;
     BOOL __wantsOverlayDoubleClickActions;
+    BOOL __wantsOverlayRightClickActions;
+    
     BOOL __allowsSelection;
     BOOL __allowsEmptySelection;
     BOOL __allowsMultipleSelection;
@@ -118,12 +122,16 @@ typedef NSUInteger MECorner;
         __overlaySelectionBackgroundColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 0.5f);
         __overlaySelectionBorderColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 1.0f);
         __overlayBorderWidth = 3.0f;
+        
         __allowsCreatingOverlays = YES;
         __allowsModifyingOverlays = YES;
         __allowsDeletingOverlays = YES;
         __allowsOverlappingOverlays = NO;
+        
         __wantsOverlaySingleClickActions = YES;
         __wantsOverlayDoubleClickActions = YES;
+        __wantsOverlayRightClickActions = YES;
+        
         __allowsSelection = YES;
         __allowsEmptySelection = YES;
         __allowsMultipleSelection = YES;
@@ -365,7 +373,7 @@ typedef NSUInteger MECorner;
             DLog(@"current selection: %@", __selectedOverlays);
             [self drawOverlays];
         }
-        if (([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) && [hitLayer valueForKey:@"MEOverlayObject"] != nil) {
+        if ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) {
             DLog(@"click!");
             DLog(@"[self wantsOverlaySingleClickActions]: %d", [self wantsOverlaySingleClickActions]);
             DLog(@"[self wantsOverlayDoubleClickActions]: %d", [self wantsOverlayDoubleClickActions]);
@@ -394,6 +402,19 @@ typedef NSUInteger MECorner;
         }
     } else if ((__state == MECreatingState || __state == MEModifyingState) && !pointsAreEqual) {
         [self draggedFrom:__mouseDownPoint to:mouseUpPoint done:YES];
+    } else {
+        [super mouseUp:theEvent];
+    }
+}
+
+- (void)rightMouseUp:(NSEvent *)theEvent
+{
+    NSPoint mouseUpPoint = [self convertWindowPointToImagePoint:[theEvent locationInWindow]];
+    
+    CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
+    
+    if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"] && [self wantsOverlayRightClickActions]) {
+        [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] rightClicked:theEvent];
     } else {
         [super mouseUp:theEvent];
     }
@@ -592,7 +613,7 @@ typedef NSUInteger MECorner;
 {
     NSRect frame = [layer frame];
     
-    CGFloat tolerance = __handleWidth * 2.0f;
+    CGFloat tolerance = __handleWidth * 3.0f;
     
     NSPoint swPoint = NSMakePoint(frame.origin.x, 
                                   frame.origin.y);
@@ -790,6 +811,7 @@ typedef NSUInteger MECorner;
 
 @synthesize wantsOverlaySingleClickActions = __wantsOverlaySingleClickActions;
 @synthesize wantsOverlayDoubleClickActions = __wantsOverlayDoubleClickActions;
+@synthesize wantsOverlayRightClickActions = __wantsOverlayRightClickActions;
 
 @synthesize allowsSelection = __allowsSelection;
 @synthesize allowsEmptySelection = __allowsEmptySelection;
