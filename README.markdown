@@ -18,7 +18,7 @@ All coordinates are in the image's coordinate system (except those in the NSEven
 
 ## Informal protocols ##
 
-The protocols as of Jan. 26, 2012:
+The protocols as of Jan. 26, 2012 -- see also [AppleDoc documentation](http://mikkelee.github.com/MEOverlayView/).
 
     @interface NSObject (MEOverlayViewDataSource)
     
