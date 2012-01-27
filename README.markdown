@@ -12,7 +12,7 @@ I've attempted to make it as generic as possible, hopefully someone else can use
 
 Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine. Try changing the delegate setup in MEOverlayController's awakeFromNib to see different behaviors.
 
-All coordinates are in the image's coordinate system.
+All coordinates are in the image's coordinate system (except those in the NSEvents, you must handle those yourself if you need to).
 
 ## Informal protocols ##
 
@@ -43,9 +43,11 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Features to add ##
 
-* Keyboard control (arrows for nav)
+* None right now.
 
 ## Bugs/uncleanliness ##
+
+* Keyboard selection: In some cases, objects can't be reached.
 
 * Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay)
 

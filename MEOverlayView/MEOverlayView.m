@@ -414,6 +414,78 @@ typedef NSUInteger MECorner;
     [self setMouseForPoint:[self convertWindowPointToImagePoint:[theEvent locationInWindow]]];
 }
 
+#pragma mark Key events
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)keyDown:(NSEvent *)theEvent
+{
+    //prevents "beep" on button click.
+    [super keyDown:theEvent];
+}
+
+- (void)keyUp:(NSEvent *)theEvent
+{
+    id selection = [__selectedOverlays lastObject];
+    DLog(@"selection: %@", selection);
+    if (selection == nil) {
+        return;
+    }
+    
+    CGPoint center = NSMakePoint(NSMidX([selection rectValue]), NSMidY([selection rectValue]));
+    
+    id bestCandidate = nil;
+    CGFloat bestDistance = MAXFLOAT;
+    
+    for (CALayer *sublayer in [__topLayer sublayers]) {
+        if (selection == sublayer) {
+            continue; //don't compare against oneself
+        }
+        CGFloat dist = MEDistance(center, NSMakePoint(NSMidX([sublayer frame]), NSMidY([sublayer frame])));
+        switch ([theEvent keyCode]) {
+            case 0x7B: { //left arrow
+                if (dist < bestDistance && NSMidX([sublayer frame]) < center.x) {
+                    bestCandidate = sublayer;
+                    bestDistance = dist;
+                }
+            }
+                break;
+            case 0x7C: { //right arrow
+                if (dist < bestDistance && NSMidX([sublayer frame]) > center.x) {
+                    bestCandidate = sublayer;
+                    bestDistance = dist;
+                }
+            }
+                break;
+            case 0x7D: { //down arrow
+                if (dist < bestDistance && NSMidY([sublayer frame]) < center.y) {
+                    bestCandidate = sublayer;
+                    bestDistance = dist;
+                }
+            }
+                break;
+            case 0x7E: { //up arrow
+                if (dist < bestDistance && NSMidY([sublayer frame]) > center.y) {
+                    bestCandidate = sublayer;
+                    bestDistance = dist;
+                }
+            }
+                break;
+            default:;
+                break;
+        }
+    }
+    
+    if (bestCandidate) {
+        __selectedOverlays = [NSMutableArray arrayWithObject:[bestCandidate valueForKey:@"MEOverlayObject"]];
+        [self drawOverlays];
+    }
+    
+    [super keyUp:theEvent];
+}
+
 #pragma mark Helpers
 
 //Weird that NSCursor doesn't provide these types of cursor...
