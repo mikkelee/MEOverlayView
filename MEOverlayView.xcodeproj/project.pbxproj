@@ -416,6 +416,7 @@
 				GCC_PREFIX_HEADER = "MEOverlayView/MEOverlayView-Prefix.pch";
 				INFOPLIST_FILE = "MEOverlayView/MEOverlayView-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				WARNING_CFLAGS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -427,6 +428,7 @@
 				GCC_PREFIX_HEADER = "MEOverlayView/MEOverlayView-Prefix.pch";
 				INFOPLIST_FILE = "MEOverlayView/MEOverlayView-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				WARNING_CFLAGS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

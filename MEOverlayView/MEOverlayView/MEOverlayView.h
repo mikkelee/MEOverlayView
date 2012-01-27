@@ -18,6 +18,8 @@
 /** An informal protocol.
  
  TODO
+ 
+ See [MEOverlayView overlayDataSource]
  */
 @interface NSObject (MEOverlayViewDataSource)
 
@@ -56,6 +58,8 @@
 /** An informal protocol.
  
  TODO
+ 
+ See [MEOverlayView overlayDelegate]
  */
 @interface NSObject (MEOverlayViewDelegate)
 
@@ -145,6 +149,7 @@ typedef NSUInteger MEState;
  
  Setting the delegate will implicitly reload the overlay view.
  
+ @see NSObject(MEOverlayViewDataSource)
  */
 @property (weak) IBOutlet id overlayDataSource;
 
@@ -158,6 +163,7 @@ typedef NSUInteger MEState;
  
  Setting the delegate will implicitly reload the overlay view.
  
+ @see NSObject(MEOverlayViewDelegate)
  */
 @property (weak) IBOutlet id overlayDelegate;
 
@@ -203,8 +209,6 @@ typedef NSUInteger MEState;
  an overlay.
  
  @see target
- @see doubleAction
- @see rightAction
  @see clickedOverlay
  */
 @property SEL action;
@@ -213,8 +217,6 @@ typedef NSUInteger MEState;
  an overlay.
  
  @see target
- @see action
- @see rightAction
  @see clickedOverlay
  */
 @property SEL doubleAction;
@@ -223,8 +225,6 @@ typedef NSUInteger MEState;
  an overlay.
  
  @see target
- @see action
- @see doubleAction
  @see clickedOverlay
  */
 @property SEL rightAction;
@@ -232,9 +232,6 @@ typedef NSUInteger MEState;
 /** Specifies the index of the overlay the user clicked to trigger an action message.
  
  @see target
- @see action
- @see doubleAction
- @see rightAction
  */
 @property (readonly) NSInteger clickedOverlay;
 
@@ -303,33 +300,33 @@ typedef NSUInteger MEState;
 
 /** The color used to fill an overlay.
  
- Defaults to transparent blue`.
+ Defaults to transparent blue.
  */
-@property (assign) CGColorRef overlayFillColor; //default: blue, alpha 0.5
+@property (assign) CGColorRef overlayFillColor;
 
 /** The color used for the border of an overlay.
  
  Defaults to opaque blue.
  */
-@property (assign) CGColorRef overlayBorderColor; //default: blue, alpha 1.0
+@property (assign) CGColorRef overlayBorderColor;
 
 /** The color used to fill a selected overlay.
  
  Defaults to transparent green.
  */
-@property (assign) CGColorRef overlaySelectionFillColor; //default: green, alpha 0.5
+@property (assign) CGColorRef overlaySelectionFillColor;
 
 /** The color used for the border of a selected overlay.
  
  Defaults to opaque green.
  */
-@property (assign) CGColorRef overlaySelectionBorderColor; //default: green, alpha 1.0
+@property (assign) CGColorRef overlaySelectionBorderColor;
 
 /** Specifies the border width of an overlay.
  
  Defaults to 3 points.
  */
-@property (assign) CGFloat overlayBorderWidth; //default 3.0f
+@property (assign) CGFloat overlayBorderWidth;
 
 /// ---------------------------------
 /// @name Configuring Behavior
