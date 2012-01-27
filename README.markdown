@@ -58,7 +58,7 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 ## Ugliness/hacks ##
 
-* Make creating/modifying less finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay)
+* Creating & modifying overlays is somewhat finicky ("fast" mouse movements can make the overlay appear stuck if they're too close to the edge or, when allowsOverlappingOverlays == NO, another overlay).
 
 * Tracking Areas/cursorRects: I can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
 
