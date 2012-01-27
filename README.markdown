@@ -28,6 +28,8 @@ All coordinates are in the image's coordinate system (except those in the NSEven
 
 * Add @see keywords in the various sections.
 
+* Docs for MEOverlayState and notifications
+
 * Go through docs with a fine comb and make sure that described behavior is correct.
 
 ## Bugs ##
