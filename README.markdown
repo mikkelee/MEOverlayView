@@ -12,35 +12,13 @@ I've attempted to make it as generic & reusable as possible, modelling the metho
 
 To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
 
-Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine. Try changing the delegate setup in MEOverlayController's awakeFromNib to see different behaviors.
+Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary; as long as they have access to the same set of objects, all should work fine. Try changing the delegate setup in MEOverlayController's awakeFromNib to see different behaviors.
 
 All coordinates are in the image's coordinate system (except those in the NSEvents, you must handle those yourself if you need to).
 
-## Informal protocols ##
+## Documentation ##
 
-The protocols as of Jan. 26, 2012 -- see also [AppleDoc documentation](http://mikkelee.github.com/MEOverlayView/).
-
-    @interface NSObject (MEOverlayViewDataSource)
-    
-    - (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
-    - (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
-    //overlayObjects can be anything, but must respond to -(NSRect)rectValue or -(NSRect)rect
-    
-    @end
-    
-    @interface NSObject (MEOverlayViewDelegate)
-    
-    - (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect;
-    - (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
-    - (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
-    
-    - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
-    - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
-    - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event;
-    
-    @end
-
-All methods are optional, but obviously nothing will happen unless you at least implement the data source.
+[AppleDoc documentation available here](http://mikkelee.github.com/MEOverlayView/).
 
 # TODO #
 
@@ -51,6 +29,8 @@ All methods are optional, but obviously nothing will happen unless you at least 
 * Drop some of the allows<x> settings and instead do it like NSTableView. Notifications? (see NSTableView setDelegate:)
 
 * Prefix ivars for future-proofing.
+
+* @see keywords in the various sections.
 
 ## Bugs ##
 

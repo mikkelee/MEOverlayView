@@ -98,38 +98,19 @@
 /// @name Events
 /// ---------------------------------
 
-/** Invoked by the overlay view when the user has single-clicked an overlay.
- 
- @param anOverlayView The overlay view that sent the message.
- @param overlayObject The object that was deleted.
- @param event The NSEvent that caused the action. Note that coordinates in the event are not in the image's
- coordinate system.
- */
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event;
-
-/** Invoked by the overlay view when the user has double-clicked an overlay.
- 
- @param anOverlayView The overlay view that sent the message.
- @param overlayObject The object that was deleted.
- @param event The NSEvent that caused the action. Note that coordinates in the event are not in the image's
- coordinate system.
- */
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event;
-
-/** Invoked by the overlay view when the user has right-clicked an overlay.
- 
- @param anOverlayView The overlay view that sent the message.
- @param overlayObject The object that was deleted.
- @param event The NSEvent that caused the action. Note that coordinates in the event are not in the image's
- coordinate system.
- */
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event;
-
 /** Informs the delegate that the overlay view’s selection has changed.
  
  @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
  */
 - (void)overlaySelectionDidChange:(NSNotification *)aNotification;
+
+
+- (void)overlayDidMove:(NSNotification *)aNotification;
+
+- (void)overlayDidResize:(NSNotification *)aNotification;
+
+- (void)overlayDidDelete:(NSNotification *)aNotification;
+
 
 @end
 
@@ -201,6 +182,61 @@ typedef NSUInteger MEState;
  @return `YES` if the state could be changed; otherwise `NO`.
  */
 - (BOOL)enterState:(MEState)theState;
+
+/// ---------------------------------
+/// @name Target-action Behavior
+/// ---------------------------------
+
+/** Specifies the target object to receive action messages from the receiver.
+ 
+ In a managed memory environment, the receiver maintains a weak reference to the 
+ target.
+ 
+ @see action
+ @see doubleAction
+ @see rightAction
+ @see clickedOverlay
+ */
+@property (weak) IBOutlet id target;
+
+/** Specifies the message selector sent to the target when the user single-clicks
+ an overlay.
+ 
+ @see target
+ @see doubleAction
+ @see rightAction
+ @see clickedOverlay
+ */
+@property SEL action;
+
+/** Specifies the message selector sent to the target when the user double-clicks
+ an overlay.
+ 
+ @see target
+ @see action
+ @see rightAction
+ @see clickedOverlay
+ */
+@property SEL doubleAction;
+
+/** Specifies the message selector sent to the target when the user right-clicks
+ an overlay.
+ 
+ @see target
+ @see action
+ @see doubleAction
+ @see clickedOverlay
+ */
+@property SEL rightAction;
+
+/** Specifies the index of the overlay the user clicked to trigger an action message.
+ 
+ @see target
+ @see action
+ @see doubleAction
+ @see rightAction
+ */
+@property (readonly) NSInteger clickedOverlay;
 
 /// ---------------------------------
 /// @name Selecting Overlays
@@ -322,25 +358,6 @@ typedef NSUInteger MEState;
  Defaults to `NO`.
  */
 @property BOOL allowsOverlappingOverlays;
-
-/** Specifies whether receiver should send single-clicks to its overlay delegate.
- 
- Defaults to `YES`.
- */
-@property BOOL wantsOverlaySingleClickActions;
-
-/** Specifies whether receiver should send double-clicks to its overlay delegate.
- 
- Defaults to `YES`.
- */
-@property BOOL wantsOverlayDoubleClickActions;
-
-/** Specifies whether receiver should send right-clicks to its overlay delegate.
- 
- Defaults to `YES`.
- */
-@property BOOL wantsOverlayRightClickActions;
-
 
 /** Specifies whether receiver should allow overlay selection.
  

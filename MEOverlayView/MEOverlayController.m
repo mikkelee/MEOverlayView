@@ -50,8 +50,10 @@
     [overlayView setAllowsDeletingOverlays:YES];
     [overlayView setAllowsOverlappingOverlays:NO];
     
-    [overlayView setWantsOverlaySingleClickActions:YES];
-    [overlayView setWantsOverlayDoubleClickActions:NO];
+    [overlayView setTarget:self];
+    [overlayView setAction:@selector(singleClick)];
+    [overlayView setDoubleAction:@selector(doubleClick)];
+    [overlayView setRightAction:@selector(rightClick)];
     
     [overlayView setAllowsOverlaySelection:YES];
     [overlayView setAllowsEmptyOverlaySelection:NO];
@@ -110,36 +112,24 @@
     [overlayView reloadData];
 }
 
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject singleClicked:(NSEvent *)event
-{
-    NSLog(@"overlay %@ singleClicked: %@", overlayObject, event);
-    /*
-     Do whatever else you feel like here... 
-     */
-    [overlayView reloadData];
-}
-
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject doubleClicked:(NSEvent *)event
-{
-    NSLog(@"overlay %@ doubleClicked: %@", overlayObject, event);
-    /*
-     Do whatever else you feel like here... 
-     */
-    [overlayView reloadData];
-}
-
-- (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event
-{
-    NSLog(@"overlay %@ rightClicked: %@", overlayObject, event);
-    /*
-     Do whatever else you feel like here... 
-     */
-    [overlayView reloadData];
-}
-
 - (void)overlaySelectionDidChange:(NSNotification *)aNotification
 {
     NSLog(@"notification: %@", aNotification);
+}
+
+- (void)singleClick
+{
+    NSLog(@"singleClick: %ld", [overlayView clickedOverlay]);
+}
+
+- (void)doubleClick
+{
+    NSLog(@"doubleClick: %ld", [overlayView clickedOverlay]);
+}
+
+- (void)rightClick
+{
+    NSLog(@"rightClick: %ld", [overlayView clickedOverlay]);
 }
 
 #pragma mark User interface

@@ -70,14 +70,15 @@ typedef NSUInteger MECorner;
     CGColorRef __overlaySelectionBorderColor;
     CGFloat __overlayBorderWidth;
     
+    __weak id __target;
+    SEL __action;
+    SEL __doubleAction;
+    SEL __rightAction;
+    
     BOOL __allowsCreatingOverlays;
     BOOL __allowsModifyingOverlays;
     BOOL __allowsDeletingOverlays;
     BOOL __allowsOverlappingOverlays;
-    
-    BOOL __wantsOverlaySingleClickActions;
-    BOOL __wantsOverlayDoubleClickActions;
-    BOOL __wantsOverlayRightClickActions;
     
     BOOL __allowsOverlaySelection;
     BOOL __allowsEmptyOverlaySelection;
@@ -104,6 +105,7 @@ typedef NSUInteger MECorner;
     //cache
     NSMutableArray *__overlayCache;
     NSMutableArray *__selectedOverlays;
+    NSInteger __clickedOverlay;
 }
 
 #pragma mark Initialization
@@ -128,10 +130,6 @@ typedef NSUInteger MECorner;
         __allowsDeletingOverlays = YES;
         __allowsOverlappingOverlays = NO;
         
-        __wantsOverlaySingleClickActions = YES;
-        __wantsOverlayDoubleClickActions = YES;
-        __wantsOverlayRightClickActions = YES;
-        
         __allowsOverlaySelection = YES;
         __allowsEmptyOverlaySelection = YES;
         __allowsMultipleOverlaySelection = YES;
@@ -141,6 +139,7 @@ typedef NSUInteger MECorner;
         
         __overlayCache = [NSMutableArray arrayWithCapacity:0];
         __selectedOverlays = [NSMutableArray arrayWithCapacity:0];
+        __clickedOverlay = -1;
     }
     
     return self;
@@ -196,8 +195,6 @@ typedef NSUInteger MECorner;
         __selectedOverlays = [NSMutableArray arrayWithObject:[__overlayCache lastObject]];
     }
     
-    NSMutableArray *tmpLayers = [NSMutableArray arrayWithCapacity:[__overlayCache count]];
-    
     __weak MEOverlayView *weakSelf = self;
     [__overlayCache enumerateObjectsUsingBlock:^(id overlayObject, NSUInteger i, BOOL *stop){
         MEOverlayView *strongSelf = weakSelf;
@@ -230,11 +227,8 @@ typedef NSUInteger MECorner;
         [self addTrackingArea:area];
         [layer setValue:area forKey:@"MEOverlayTrackingArea"];
         
-        [tmpLayers addObject:layer];
+        [__topLayer addSublayer:layer];
     }];
-    
-    //switcheroo:
-    [__topLayer setSublayers:tmpLayers];
 }
 
 #pragma mark Deallocation
@@ -372,29 +366,17 @@ typedef NSUInteger MECorner;
             DLog(@"current selection: %@", __selectedOverlays);
             [self drawOverlays];
         }
-        if ([self wantsOverlaySingleClickActions] || [self wantsOverlayDoubleClickActions]) {
+        if (__action || __doubleAction) {
+            __clickedOverlay = [__overlayCache indexOfObject:[hitLayer valueForKey:@"MEOverlayObject"]];
             DLog(@"click!");
-            DLog(@"[self wantsOverlaySingleClickActions]: %d", [self wantsOverlaySingleClickActions]);
-            DLog(@"[self wantsOverlayDoubleClickActions]: %d", [self wantsOverlayDoubleClickActions]);
-            if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
-                SEL theSelector = @selector(overlayView:overlay:singleClicked:);
-                __singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__overlayDelegate class] instanceMethodSignatureForSelector:theSelector]];
-                
-                [__singleClickInvocation setSelector:theSelector];
-                [__singleClickInvocation setTarget:__overlayDelegate];
-                MEOverlayView *selfRef = self;
-                id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
-                [__singleClickInvocation setArgument:&selfRef atIndex:2];
-                [__singleClickInvocation setArgument:&overlayObject atIndex:3];
-                [__singleClickInvocation setArgument:&theEvent atIndex:4];
-                [__singleClickInvocation retainArguments]; 
-               
-                [__singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
-                //[__overlayDelegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
-            } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
+            DLog(@"__action: %@", NSStringFromSelector(__action));
+            DLog(@"__doubleAction: %@", NSStringFromSelector(__doubleAction));
+            if ([theEvent clickCount] == 1 && __action) {
+                [__target performSelector:__action withObject:nil afterDelay:[NSEvent doubleClickInterval]];
+            } else if ([theEvent clickCount] == 2 && __doubleAction) {
                 DLog(@"Cancelling single click: %@", __singleClickInvocation);
-                [NSRunLoop cancelPreviousPerformRequestsWithTarget:__singleClickInvocation];
-                [__overlayDelegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
+                [NSRunLoop cancelPreviousPerformRequestsWithTarget:__target];
+                [__target performSelector:__doubleAction];
             } else {
                 [super mouseUp:theEvent];
             }
@@ -412,8 +394,9 @@ typedef NSUInteger MECorner;
     
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
-    if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"] && [self wantsOverlayRightClickActions]) {
-        [__overlayDelegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] rightClicked:theEvent];
+    if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"] && __rightAction) {
+        __clickedOverlay = [__overlayCache indexOfObject:[hitLayer valueForKey:@"MEOverlayObject"]];
+        [__target performSelector:__rightAction];
     } else {
         [super mouseUp:theEvent];
     }
@@ -839,13 +822,15 @@ typedef NSUInteger MECorner;
 @synthesize allowsDeletingOverlays = __allowsDeletingOverlays;
 @synthesize allowsOverlappingOverlays = __allowsOverlappingOverlays;
 
-@synthesize wantsOverlaySingleClickActions = __wantsOverlaySingleClickActions;
-@synthesize wantsOverlayDoubleClickActions = __wantsOverlayDoubleClickActions;
-@synthesize wantsOverlayRightClickActions = __wantsOverlayRightClickActions;
-
 @synthesize allowsOverlaySelection = __allowsOverlaySelection;
 @synthesize allowsEmptyOverlaySelection = __allowsEmptyOverlaySelection;
 @synthesize allowsMultipleOverlaySelection = __allowsMultipleOverlaySelection;
+
+@synthesize target = __target;
+@synthesize action = __action;
+@synthesize doubleAction = __doubleAction;
+@synthesize rightAction = __rightAction;
+@synthesize clickedOverlay = __clickedOverlay;
 
 @end
 
