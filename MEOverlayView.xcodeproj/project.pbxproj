@@ -17,10 +17,10 @@
 		3E0833B814D0818100AE31C2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E08339814D0818100AE31C2 /* Cocoa.framework */; };
 		3E0833C014D0818100AE31C2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833BE14D0818100AE31C2 /* InfoPlist.strings */; };
 		3E0833C314D0818100AE31C2 /* MEOverlayViewTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833C214D0818100AE31C2 /* MEOverlayViewTests.m */; };
-		3E0833CF14D0854900AE31C2 /* MEOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833CE14D0854900AE31C2 /* MEOverlayView.m */; };
 		3E0833D114D097B100AE31C2 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E0833D014D097B100AE31C2 /* Quartz.framework */; };
 		3E0833D314D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3E0833D214D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg */; };
 		3E0833D814D0B41D00AE31C2 /* MEOverlayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */; };
+		3E417D1C14D2ABF400F69190 /* MEOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E417D1B14D2ABF400F69190 /* MEOverlayView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,12 +52,12 @@
 		3E0833BD14D0818100AE31C2 /* MEOverlayViewTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MEOverlayViewTests-Info.plist"; sourceTree = "<group>"; };
 		3E0833BF14D0818100AE31C2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3E0833C214D0818100AE31C2 /* MEOverlayViewTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MEOverlayViewTests.m; sourceTree = "<group>"; };
-		3E0833CD14D0854900AE31C2 /* MEOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MEOverlayView.h; sourceTree = "<group>"; };
-		3E0833CE14D0854900AE31C2 /* MEOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MEOverlayView.m; sourceTree = "<group>"; };
 		3E0833D014D097B100AE31C2 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		3E0833D214D09A7000AE31C2 /* royalty-free-food-image-cabbage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "royalty-free-food-image-cabbage.jpg"; sourceTree = "<group>"; };
 		3E0833D614D0B41D00AE31C2 /* MEOverlayController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MEOverlayController.h; sourceTree = "<group>"; };
 		3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MEOverlayController.m; sourceTree = "<group>"; };
+		3E417D1A14D2ABF400F69190 /* MEOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MEOverlayView.h; path = MEOverlayView/MEOverlayView.h; sourceTree = "<group>"; };
+		3E417D1B14D2ABF400F69190 /* MEOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MEOverlayView.m; path = MEOverlayView/MEOverlayView.m; sourceTree = "<group>"; };
 		3EA621A514D103DC00FEEF87 /* README.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -130,8 +130,7 @@
 				3E0833AA14D0818100AE31C2 /* MEAppDelegate.h */,
 				3E0833AB14D0818100AE31C2 /* MEAppDelegate.m */,
 				3E0833AD14D0818100AE31C2 /* MainMenu.xib */,
-				3E0833CD14D0854900AE31C2 /* MEOverlayView.h */,
-				3E0833CE14D0854900AE31C2 /* MEOverlayView.m */,
+				3E417D1914D2AB6A00F69190 /* MEOverlayView */,
 				3E0833D614D0B41D00AE31C2 /* MEOverlayController.h */,
 				3E0833D714D0B41D00AE31C2 /* MEOverlayController.m */,
 				3E08339F14D0818100AE31C2 /* Supporting Files */,
@@ -170,6 +169,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		3E417D1914D2AB6A00F69190 /* MEOverlayView */ = {
+			isa = PBXGroup;
+			children = (
+				3E417D1A14D2ABF400F69190 /* MEOverlayView.h */,
+				3E417D1B14D2ABF400F69190 /* MEOverlayView.m */,
+			);
+			name = MEOverlayView;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -180,6 +188,7 @@
 				3E08339014D0818100AE31C2 /* Sources */,
 				3E08339114D0818100AE31C2 /* Frameworks */,
 				3E08339214D0818100AE31C2 /* Resources */,
+				3E417D1714D2A1C200F69190 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -272,6 +281,19 @@
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
 		};
+		3E417D1714D2A1C200F69190 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/appledoc --project-name $PROJECT_NAME --project-company \"Mikkel Eide Eriksen\" --company-id dk.kildekort --output $SOURCE_ROOT/Documentation --logformat Xcode --keep-intermediate-files MEOverlayView/MEOverlayView/\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -281,8 +303,8 @@
 			files = (
 				3E0833A514D0818100AE31C2 /* main.m in Sources */,
 				3E0833AC14D0818100AE31C2 /* MEAppDelegate.m in Sources */,
-				3E0833CF14D0854900AE31C2 /* MEOverlayView.m in Sources */,
 				3E0833D814D0B41D00AE31C2 /* MEOverlayController.m in Sources */,
+				3E417D1C14D2ABF400F69190 /* MEOverlayView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

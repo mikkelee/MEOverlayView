@@ -8,7 +8,9 @@ The data source supplies objects (that respond to -rect or -rectValue) which the
 
 The delegate is in turn told when an overlay was created/modified/deleted, depending on what allowances have been set up. Additionally, mouseclicks (single / double) can be supplied to the delegate. The delegate can then call back with -reloadData if things have changed.
 
-I've attempted to make it as generic as possible, hopefully someone else can use it. To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
+I've attempted to make it as generic & reusable as possible, modelling the method names & flow after NSTableView. Hopefully it should be possible to "jump right in" if you're familiar with Cocoa conventions.
+
+To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
 
 Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary, as long as they have access to the same set of objects, all should work fine. Try changing the delegate setup in MEOverlayController's awakeFromNib to see different behaviors.
 
@@ -42,9 +44,13 @@ All methods are optional, but obviously nothing will happen unless you at least 
 
 # TODO #
 
+* Go through docs and make sure that described behavior is correct.
+
 ## Features to add ##
 
-* None right now.
+* Drop some of the allows<x> settings and instead do it like NSTableView. Notifications? (see NSTableView setDelegate:)
+
+* Prefix ivars for future-proofing.
 
 ## Bugs/uncleanliness ##
 
@@ -57,12 +63,6 @@ All methods are optional, but obviously nothing will happen unless you at least 
 * Tracking Areas/cursorRects: I can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
 
 * The resize cursors are loaded from hardcoded paths in WebCore.framework since NSCursor apparently doesn't supply these per default. It's not very nice, but I didn't want to add make the view depend on extra files (and presumably everybody has WebCore installed).
-
-## Nice to have ##
-
-* Default allows<x> settings could probably be better.
-
-* AppleDoc documentation
 
 -----------------------------------------------------------------------------------------------
 

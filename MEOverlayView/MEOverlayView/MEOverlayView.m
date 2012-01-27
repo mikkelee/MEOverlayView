@@ -57,16 +57,16 @@ typedef NSUInteger MECorner;
 #pragma mark Implementation
 
 @implementation MEOverlayView {
-    __weak id __delegate;
-    id __dataSource;
+    __weak id __overlayDelegate;
+    __weak id __overlayDataSource;
     
     MEState __state;
     CALayer *__topLayer;
     
     //properties
-    CGColorRef __overlayBackgroundColor;
+    CGColorRef __overlayFillColor;
     CGColorRef __overlayBorderColor;
-    CGColorRef __overlaySelectionBackgroundColor;
+    CGColorRef __overlaySelectionFillColor;
     CGColorRef __overlaySelectionBorderColor;
     CGFloat __overlayBorderWidth;
     
@@ -79,9 +79,9 @@ typedef NSUInteger MECorner;
     BOOL __wantsOverlayDoubleClickActions;
     BOOL __wantsOverlayRightClickActions;
     
-    BOOL __allowsSelection;
-    BOOL __allowsEmptySelection;
-    BOOL __allowsMultipleSelection;
+    BOOL __allowsOverlaySelection;
+    BOOL __allowsEmptyOverlaySelection;
+    BOOL __allowsMultipleOverlaySelection;
     
     //internal helper ivars
     CGFloat __handleWidth;
@@ -117,9 +117,9 @@ typedef NSUInteger MECorner;
         __state = MEIdleState;
         
         //default property values:
-        __overlayBackgroundColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
+        __overlayFillColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
         __overlayBorderColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f);
-        __overlaySelectionBackgroundColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 0.5f);
+        __overlaySelectionFillColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 0.5f);
         __overlaySelectionBorderColor = CGColorCreateGenericRGB(0.0f, 1.0f, 0.0f, 1.0f);
         __overlayBorderWidth = 3.0f;
         
@@ -132,9 +132,9 @@ typedef NSUInteger MECorner;
         __wantsOverlayDoubleClickActions = YES;
         __wantsOverlayRightClickActions = YES;
         
-        __allowsSelection = YES;
-        __allowsEmptySelection = YES;
-        __allowsMultipleSelection = YES;
+        __allowsOverlaySelection = YES;
+        __allowsEmptyOverlaySelection = YES;
+        __allowsMultipleOverlaySelection = YES;
         
         __handleWidth = __overlayBorderWidth * 2.0f;
         __handleOffset = (__overlayBorderWidth / 2.0f) + 1.0f;
@@ -150,7 +150,7 @@ typedef NSUInteger MECorner;
 {
     [super awakeFromNib];
     
-    DLog(@"overlayDelegate: %@", __delegate);
+    DLog(@"overlayDelegate: %@", __overlayDelegate);
 
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
 }
@@ -175,15 +175,15 @@ typedef NSUInteger MECorner;
 
 - (void)reloadData
 {
-    DLog(@"Setting up overlays from overlayDelegate: %@", __delegate);
+    DLog(@"Setting up overlays from overlayDelegate: %@", __overlayDelegate);
     
-    NSUInteger count = [__dataSource numberOfOverlaysInOverlayView:self];
+    NSUInteger count = [__overlayDataSource numberOfOverlaysInOverlayView:self];
     
     DLog(@"Number of overlays to create: %lu", count);
     
     __overlayCache = [NSMutableArray arrayWithCapacity:count];
     for (NSUInteger i = 0; i < count; i++) {
-        [__overlayCache addObject:[__dataSource overlayView:self overlayObjectAtIndex:i]];
+        [__overlayCache addObject:[__overlayDataSource overlayView:self overlayObjectAtIndex:i]];
     }
     
     [self drawOverlays];
@@ -194,7 +194,7 @@ typedef NSUInteger MECorner;
     DLog(@"start");
     [__topLayer setSublayers:[NSArray array]];
     
-    if (![self allowsEmptySelection] && [__selectedOverlays count] == 0 && [__overlayCache count] > 0) {
+    if (![self allowsEmptyOverlaySelection] && [__selectedOverlays count] == 0 && [__overlayCache count] > 0) {
         __selectedOverlays = [NSMutableArray arrayWithObject:[__overlayCache lastObject]];
     }
     
@@ -240,7 +240,7 @@ typedef NSUInteger MECorner;
     [self setOverlayDelegate:nil];
     [self setOverlayDataSource:nil];
     
-    CFRelease(__overlayBackgroundColor);
+    CFRelease(__overlayFillColor);
     CFRelease(__overlayBorderColor);
 }
 
@@ -301,12 +301,12 @@ typedef NSUInteger MECorner;
     return [__selectedOverlays containsObject:[__overlayCache objectAtIndex:overlayIndex]];
 }
 
-- (void)selectAll:(id)sender
+- (IBAction)selectAllOverlays:(id)sender
 {
     __selectedOverlays = [__overlayCache mutableCopy];
 }
 
-- (void)deselectAll:(id)sender
+- (IBAction)deselectAllOverlays:(id)sender
 {
     __selectedOverlays = [NSMutableArray arrayWithCapacity:2];
 }
@@ -355,20 +355,20 @@ typedef NSUInteger MECorner;
     
     if (__state == MEDeletingState && [self allowsDeletingOverlays] && [hitLayer valueForKey:@"MEOverlayObject"]) {
         id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
-        [__delegate overlayView:self didDeleteOverlay:overlayObject];
+        [__overlayDelegate overlayView:self didDeleteOverlay:overlayObject];
         [__selectedOverlays removeObject:overlayObject];
     } else if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"]) {
-        if ([self allowsSelection]) {
+        if ([self allowsOverlaySelection]) {
             NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
             DLog(@"checking select with %lu", layerNumber);
             if ([self isOverlaySelected:layerNumber]) {
-                if ([self numberOfSelectedOverlays] > 1 || [self allowsEmptySelection]) {
+                if ([self numberOfSelectedOverlays] > 1 || [self allowsEmptyOverlaySelection]) {
                     DLog(@"deselected");
                     [self deselectOverlay:layerNumber];
                 }
             } else {
                 [self selectOverlayIndexes:[NSIndexSet indexSetWithIndex:layerNumber] 
-                      byExtendingSelection:[self allowsMultipleSelection]];
+                      byExtendingSelection:[self allowsMultipleOverlaySelection]];
             }
             DLog(@"current selection: %@", __selectedOverlays);
             [self drawOverlays];
@@ -379,10 +379,10 @@ typedef NSUInteger MECorner;
             DLog(@"[self wantsOverlayDoubleClickActions]: %d", [self wantsOverlayDoubleClickActions]);
             if ([theEvent clickCount] == 1 && [self wantsOverlaySingleClickActions]) {
                 SEL theSelector = @selector(overlayView:overlay:singleClicked:);
-                __singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__delegate class] instanceMethodSignatureForSelector:theSelector]];
+                __singleClickInvocation = [NSInvocation invocationWithMethodSignature:[[__overlayDelegate class] instanceMethodSignatureForSelector:theSelector]];
                 
                 [__singleClickInvocation setSelector:theSelector];
-                [__singleClickInvocation setTarget:__delegate];
+                [__singleClickInvocation setTarget:__overlayDelegate];
                 MEOverlayView *selfRef = self;
                 id overlayObject = [hitLayer valueForKey:@"MEOverlayObject"];
                 [__singleClickInvocation setArgument:&selfRef atIndex:2];
@@ -391,11 +391,11 @@ typedef NSUInteger MECorner;
                 [__singleClickInvocation retainArguments]; 
                
                 [__singleClickInvocation performSelector:@selector(invoke) withObject:nil afterDelay:[NSEvent doubleClickInterval]];
-                //[__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
+                //[__overlayDelegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] singleClicked:theEvent];
             } else if ([theEvent clickCount] == 2 && [self wantsOverlayDoubleClickActions]) {
                 DLog(@"Cancelling single click: %@", __singleClickInvocation);
                 [NSRunLoop cancelPreviousPerformRequestsWithTarget:__singleClickInvocation];
-                [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
+                [__overlayDelegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] doubleClicked:theEvent];
             } else {
                 [super mouseUp:theEvent];
             }
@@ -414,7 +414,7 @@ typedef NSUInteger MECorner;
     CALayer *hitLayer = [self layerAtPoint:mouseUpPoint];
     
     if (__state == MEIdleState && [hitLayer valueForKey:@"MEOverlayObject"] && [self wantsOverlayRightClickActions]) {
-        [__delegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] rightClicked:theEvent];
+        [__overlayDelegate overlayView:self overlay:[hitLayer valueForKey:@"MEOverlayObject"] rightClicked:theEvent];
     } else {
         [super mouseUp:theEvent];
     }
@@ -585,10 +585,10 @@ typedef NSUInteger MECorner;
     
     if (selected) {
         DLog(@"drawing selected");
-        [layer setFillColor:__overlaySelectionBackgroundColor];
+        [layer setFillColor:__overlaySelectionFillColor];
         [layer setStrokeColor:__overlaySelectionBorderColor];
     } else {
-        [layer setFillColor:__overlayBackgroundColor];
+        [layer setFillColor:__overlayFillColor];
         [layer setStrokeColor:__overlayBorderColor];
     }
     [layer setLineWidth:__overlayBorderWidth];
@@ -699,7 +699,7 @@ typedef NSUInteger MECorner;
         
         if (done) {
             DLog(@"done creating: %@", NSStringFromRect([__activeLayer frame]));
-            [__delegate overlayView:self didCreateOverlay:[__activeLayer frame]];
+            [__overlayDelegate overlayView:self didCreateOverlay:[__activeLayer frame]];
             [__activeLayer removeFromSuperlayer];
             __activeLayer = nil;
         }
@@ -784,7 +784,7 @@ typedef NSUInteger MECorner;
         
         if (done) {
             DLog(@"done modifying %@: %@", [__activeLayer valueForKey:@"MEOverlayObject"], NSStringFromRect([__activeLayer frame]));
-            [__delegate overlayView:self didModifyOverlay:[__activeLayer valueForKey:@"MEOverlayObject"] newRect:[__activeLayer frame]];
+            [__overlayDelegate overlayView:self didModifyOverlay:[__activeLayer valueForKey:@"MEOverlayObject"] newRect:[__activeLayer frame]];
             __activeLayer = nil;
             [[NSCursor openHandCursor] set];
         }
@@ -795,12 +795,33 @@ typedef NSUInteger MECorner;
 
 #pragma mark Properties
 
-@synthesize overlayDelegate = __delegate;
-@synthesize overlayDataSource = __dataSource;
+- (id)overlayDataSource
+{
+    return __overlayDataSource;
+}
 
-@synthesize overlayBackgroundColor = __overlayBackgroundColor;
+- (void)setOverlayDataSource:(id)overlayDataSource
+{
+    __overlayDataSource = overlayDataSource;
+    
+    [self reloadData];
+}
+
+- (id)overlayDelegate
+{
+    return __overlayDelegate;
+}
+
+- (void)setOverlayDelegate:(id)overlayDelegate
+{
+    __overlayDelegate = overlayDelegate;
+    
+    [self reloadData];
+}
+
+@synthesize overlayFillColor = __overlayFillColor;
 @synthesize overlayBorderColor = __overlayBorderColor;
-@synthesize overlaySelectionBackgroundColor = __overlaySelectionBackgroundColor;
+@synthesize overlaySelectionFillColor = __overlaySelectionFillColor;
 @synthesize overlaySelectionBorderColor = __overlaySelectionBorderColor;
 @synthesize overlayBorderWidth = __overlayBorderWidth;
 
@@ -813,8 +834,8 @@ typedef NSUInteger MECorner;
 @synthesize wantsOverlayDoubleClickActions = __wantsOverlayDoubleClickActions;
 @synthesize wantsOverlayRightClickActions = __wantsOverlayRightClickActions;
 
-@synthesize allowsSelection = __allowsSelection;
-@synthesize allowsEmptySelection = __allowsEmptySelection;
-@synthesize allowsMultipleSelection = __allowsMultipleSelection;
+@synthesize allowsOverlaySelection = __allowsOverlaySelection;
+@synthesize allowsEmptyOverlaySelection = __allowsEmptyOverlaySelection;
+@synthesize allowsMultipleOverlaySelection = __allowsMultipleOverlaySelection;
 
 @end

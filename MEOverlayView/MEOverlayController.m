@@ -39,9 +39,9 @@
 {
     //some examples -- try changing them to see how they work.
     
-    [overlayView setOverlayBackgroundColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f)];
+    [overlayView setOverlayFillColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f)];
     [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f)];
-    [overlayView setOverlaySelectionBackgroundColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f)];
+    [overlayView setOverlaySelectionFillColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f)];
     [overlayView setOverlaySelectionBorderColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 1.0f)];
     [overlayView setOverlayBorderWidth:3.0f];
     
@@ -53,9 +53,9 @@
     [overlayView setWantsOverlaySingleClickActions:YES];
     [overlayView setWantsOverlayDoubleClickActions:NO];
     
-    [overlayView setAllowsSelection:YES];
-    [overlayView setAllowsEmptySelection:NO];
-    [overlayView setAllowsMultipleSelection:YES];
+    [overlayView setAllowsOverlaySelection:YES];
+    [overlayView setAllowsEmptyOverlaySelection:NO];
+    [overlayView setAllowsMultipleOverlaySelection:YES];
 }
 
 #pragma mark MEOverlayViewDataSource
