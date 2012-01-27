@@ -362,10 +362,12 @@ typedef NSUInteger MECorner;
                 if ([self numberOfSelectedOverlays] > 1 || [self allowsEmptyOverlaySelection]) {
                     DLog(@"deselected");
                     [self deselectOverlay:layerNumber];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
                 }
             } else {
                 [self selectOverlayIndexes:[NSIndexSet indexSetWithIndex:layerNumber] 
                       byExtendingSelection:[self allowsMultipleOverlaySelection]];
+                [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
             }
             DLog(@"current selection: %@", __selectedOverlays);
             [self drawOverlays];
@@ -811,7 +813,17 @@ typedef NSUInteger MECorner;
 
 - (void)setOverlayDelegate:(id)overlayDelegate
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:__overlayDelegate
+                                                    name:MEOverlayViewSelectionDidChangeNotification
+                                                  object:self];
+    
     __overlayDelegate = overlayDelegate;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:__overlayDelegate 
+                                             selector:@selector(overlaySelectionDidChange:) 
+                                                 name:MEOverlayViewSelectionDidChangeNotification 
+                                               object:self];
+
     
     [self reloadData];
 }
@@ -836,3 +848,7 @@ typedef NSUInteger MECorner;
 @synthesize allowsMultipleOverlaySelection = __allowsMultipleOverlaySelection;
 
 @end
+
+#pragma mark Notifications
+
+NSString *MEOverlayViewSelectionDidChangeNotification = @"MEOverlayViewSelectionDidChangeNotification";

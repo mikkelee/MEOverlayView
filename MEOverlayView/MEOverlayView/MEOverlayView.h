@@ -13,6 +13,8 @@
 #pragma mark -
 #pragma mark Overlay Data Source
 
+//Model this after NSTableView
+
 /** An informal protocol.
  
  TODO
@@ -122,6 +124,12 @@
  coordinate system.
  */
 - (void)overlayView:(MEOverlayView *)anOverlayView overlay:(id)overlayObject rightClicked:(NSEvent *)event;
+
+/** Informs the delegate that the overlay view’s selection has changed.
+ 
+ @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
+ */
+- (void)overlaySelectionDidChange:(NSNotification *)aNotification;
 
 @end
 
@@ -353,3 +361,12 @@ typedef NSUInteger MEState;
 @property BOOL allowsMultipleOverlaySelection;
 
 @end
+
+#pragma mark Notifications
+
+/**
+ Posted when an NSOverlayView object's selection changes. The notification object 
+ is the overlay view whose selection changed. This notification does not contain 
+ a userInfo dictionary.
+ */
+extern NSString *MEOverlayViewSelectionDidChangeNotification;

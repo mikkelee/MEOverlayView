@@ -137,6 +137,11 @@
     [overlayView reloadData];
 }
 
+- (void)overlaySelectionDidChange:(NSNotification *)aNotification
+{
+    NSLog(@"notification: %@", aNotification);
+}
+
 #pragma mark User interface
 
 - (IBAction)logCurrentOverlays:(id)sender
