@@ -44,17 +44,13 @@
 	
 	<option value="instance_methods">Instance Methods</option>
 	
+	<option value="//api/name/overlaySelectionDidChange:">&nbsp;&nbsp;&nbsp;&nbsp;- overlaySelectionDidChange:</option>
+	
 	<option value="//api/name/overlayView:didCreateOverlay:">&nbsp;&nbsp;&nbsp;&nbsp;- overlayView:didCreateOverlay:</option>
 	
 	<option value="//api/name/overlayView:didDeleteOverlay:">&nbsp;&nbsp;&nbsp;&nbsp;- overlayView:didDeleteOverlay:</option>
 	
 	<option value="//api/name/overlayView:didModifyOverlay:newRect:">&nbsp;&nbsp;&nbsp;&nbsp;- overlayView:didModifyOverlay:newRect:</option>
-	
-	<option value="//api/name/overlayView:overlay:doubleClicked:">&nbsp;&nbsp;&nbsp;&nbsp;- overlayView:overlay:doubleClicked:</option>
-	
-	<option value="//api/name/overlayView:overlay:rightClicked:">&nbsp;&nbsp;&nbsp;&nbsp;- overlayView:overlay:rightClicked:</option>
-	
-	<option value="//api/name/overlayView:overlay:singleClicked:">&nbsp;&nbsp;&nbsp;&nbsp;- overlayView:overlay:singleClicked:</option>
 	
 	
 	
@@ -88,17 +84,13 @@
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#instance_methods">Instance Methods</a></span><ul>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlaySelectionDidChange:">overlaySelectionDidChange:</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayView:didCreateOverlay:">overlayView:didCreateOverlay:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayView:didDeleteOverlay:">overlayView:didDeleteOverlay:</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayView:didModifyOverlay:newRect:">overlayView:didModifyOverlay:newRect:</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayView:overlay:doubleClicked:">overlayView:overlay:doubleClicked:</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayView:overlay:rightClicked:">overlayView:overlay:rightClicked:</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayView:overlay:singleClicked:">overlayView:overlay:singleClicked:</a></span></li>
 	
 </ul></li>
 
@@ -137,6 +129,8 @@
 						<p>An informal protocol.</p>
 
 <p>TODO</p>
+
+<p>See <a href="../Classes/MEOverlayView.html#//api/name/overlayDelegate">[MEOverlayView overlayDelegate]</a></p>
 					</div>
 					
 					
@@ -183,22 +177,8 @@
 						<ul class="task-list">
 							<li>
 	<span class="tooltip">
-		<code><a href="#//api/name/overlayView:overlay:singleClicked:">&ndash;&nbsp;overlayView:overlay:singleClicked:</a></code>
-		<span class="tooltip"><p>Invoked by the overlay view when the user has single-clicked an overlay.</p></span>
-	</span>
-	
-	
-</li><li>
-	<span class="tooltip">
-		<code><a href="#//api/name/overlayView:overlay:doubleClicked:">&ndash;&nbsp;overlayView:overlay:doubleClicked:</a></code>
-		<span class="tooltip"><p>Invoked by the overlay view when the user has double-clicked an overlay.</p></span>
-	</span>
-	
-	
-</li><li>
-	<span class="tooltip">
-		<code><a href="#//api/name/overlayView:overlay:rightClicked:">&ndash;&nbsp;overlayView:overlay:rightClicked:</a></code>
-		<span class="tooltip"><p>Invoked by the overlay view when the user has right-clicked an overlay.</p></span>
+		<code><a href="#//api/name/overlaySelectionDidChange:">&ndash;&nbsp;overlaySelectionDidChange:</a></code>
+		<span class="tooltip"><p>Informs the delegate that the overlay view’s selection has changed.</p></span>
 	</span>
 	
 	
@@ -218,6 +198,55 @@
 					<div class="section section-methods">
 						<a title="Instance Methods" name="instance_methods"></a>
 						<h2 class="subtitle subtitle-methods">Instance Methods</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/overlaySelectionDidChange:" title="overlaySelectionDidChange:"></a>
+	<h3 class="subsubtitle method-title">overlaySelectionDidChange:</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Informs the delegate that the overlay view’s selection has changed.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>- (void)overlaySelectionDidChange:(NSNotification *)<em>aNotification</em></code></div>
+	
+	
+	<div class="method-subsection arguments-section parameters">
+		<h4 class="method-subtitle parameter-title">Parameters</h4>
+		
+		<dl class="argument-def parameter-def">
+			<dt><em>aNotification</em></dt>
+			<dd><p>A notification named MEOverlayViewSelectionDidChangeNotification.</p></dd>
+		</dl>
+		
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Informs the delegate that the overlay view’s selection has changed.</p>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">MEOverlayView.h</code><br />
+	</div>				
+	
+	
+</div>
 						
 						<div class="section-method">
 	<a name="//api/name/overlayView:didCreateOverlay:" title="overlayView:didCreateOverlay:"></a>
@@ -378,186 +407,6 @@ asked.</p>
 
 <p>The delegate should change the frame of the rect. Alternately, the new frame can be
 discarded if the frame is not satisfactory.</p>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">MEOverlayView.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/overlayView:overlay:doubleClicked:" title="overlayView:overlay:doubleClicked:"></a>
-	<h3 class="subsubtitle method-title">overlayView:overlay:doubleClicked:</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Invoked by the overlay view when the user has double-clicked an overlay.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (void)overlayView:(MEOverlayView *)<em>anOverlayView</em> overlay:(id)<em>overlayObject</em> doubleClicked:(NSEvent *)<em>event</em></code></div>
-	
-	
-	<div class="method-subsection arguments-section parameters">
-		<h4 class="method-subtitle parameter-title">Parameters</h4>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>anOverlayView</em></dt>
-			<dd><p>The overlay view that sent the message.</p></dd>
-		</dl>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>overlayObject</em></dt>
-			<dd><p>The object that was deleted.</p></dd>
-		</dl>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>event</em></dt>
-			<dd><p>The NSEvent that caused the action. Note that coordinates in the event are not in the image&rsquo;s
-coordinate system.</p></dd>
-		</dl>
-		
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>Invoked by the overlay view when the user has double-clicked an overlay.</p>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">MEOverlayView.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/overlayView:overlay:rightClicked:" title="overlayView:overlay:rightClicked:"></a>
-	<h3 class="subsubtitle method-title">overlayView:overlay:rightClicked:</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Invoked by the overlay view when the user has right-clicked an overlay.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (void)overlayView:(MEOverlayView *)<em>anOverlayView</em> overlay:(id)<em>overlayObject</em> rightClicked:(NSEvent *)<em>event</em></code></div>
-	
-	
-	<div class="method-subsection arguments-section parameters">
-		<h4 class="method-subtitle parameter-title">Parameters</h4>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>anOverlayView</em></dt>
-			<dd><p>The overlay view that sent the message.</p></dd>
-		</dl>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>overlayObject</em></dt>
-			<dd><p>The object that was deleted.</p></dd>
-		</dl>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>event</em></dt>
-			<dd><p>The NSEvent that caused the action. Note that coordinates in the event are not in the image&rsquo;s
-coordinate system.</p></dd>
-		</dl>
-		
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>Invoked by the overlay view when the user has right-clicked an overlay.</p>
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">MEOverlayView.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/overlayView:overlay:singleClicked:" title="overlayView:overlay:singleClicked:"></a>
-	<h3 class="subsubtitle method-title">overlayView:overlay:singleClicked:</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Invoked by the overlay view when the user has single-clicked an overlay.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>- (void)overlayView:(MEOverlayView *)<em>anOverlayView</em> overlay:(id)<em>overlayObject</em> singleClicked:(NSEvent *)<em>event</em></code></div>
-	
-	
-	<div class="method-subsection arguments-section parameters">
-		<h4 class="method-subtitle parameter-title">Parameters</h4>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>anOverlayView</em></dt>
-			<dd><p>The overlay view that sent the message.</p></dd>
-		</dl>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>overlayObject</em></dt>
-			<dd><p>The object that was deleted.</p></dd>
-		</dl>
-		
-		<dl class="argument-def parameter-def">
-			<dt><em>event</em></dt>
-			<dd><p>The NSEvent that caused the action. Note that coordinates in the event are not in the image&rsquo;s
-coordinate system.</p></dd>
-		</dl>
-		
-	</div>
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>Invoked by the overlay view when the user has single-clicked an overlay.</p>
 	</div>
 	
 	

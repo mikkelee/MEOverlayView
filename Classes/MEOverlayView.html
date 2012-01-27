@@ -40,6 +40,8 @@
 	
 	<option value="properties">Properties</option>
 	
+	<option value="//api/name/action">&nbsp;&nbsp;&nbsp;&nbsp;action</option>
+	
 	<option value="//api/name/allowsCreatingOverlays">&nbsp;&nbsp;&nbsp;&nbsp;allowsCreatingOverlays</option>
 	
 	<option value="//api/name/allowsDeletingOverlays">&nbsp;&nbsp;&nbsp;&nbsp;allowsDeletingOverlays</option>
@@ -53,6 +55,10 @@
 	<option value="//api/name/allowsOverlappingOverlays">&nbsp;&nbsp;&nbsp;&nbsp;allowsOverlappingOverlays</option>
 	
 	<option value="//api/name/allowsOverlaySelection">&nbsp;&nbsp;&nbsp;&nbsp;allowsOverlaySelection</option>
+	
+	<option value="//api/name/clickedOverlay">&nbsp;&nbsp;&nbsp;&nbsp;clickedOverlay</option>
+	
+	<option value="//api/name/doubleAction">&nbsp;&nbsp;&nbsp;&nbsp;doubleAction</option>
 	
 	<option value="//api/name/overlayBorderColor">&nbsp;&nbsp;&nbsp;&nbsp;overlayBorderColor</option>
 	
@@ -68,11 +74,9 @@
 	
 	<option value="//api/name/overlaySelectionFillColor">&nbsp;&nbsp;&nbsp;&nbsp;overlaySelectionFillColor</option>
 	
-	<option value="//api/name/wantsOverlayDoubleClickActions">&nbsp;&nbsp;&nbsp;&nbsp;wantsOverlayDoubleClickActions</option>
+	<option value="//api/name/rightAction">&nbsp;&nbsp;&nbsp;&nbsp;rightAction</option>
 	
-	<option value="//api/name/wantsOverlayRightClickActions">&nbsp;&nbsp;&nbsp;&nbsp;wantsOverlayRightClickActions</option>
-	
-	<option value="//api/name/wantsOverlaySingleClickActions">&nbsp;&nbsp;&nbsp;&nbsp;wantsOverlaySingleClickActions</option>
+	<option value="//api/name/target">&nbsp;&nbsp;&nbsp;&nbsp;target</option>
 	
 	
 	
@@ -125,6 +129,8 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Managing State">Managing State</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Target-action Behavior">Target-action Behavior</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Selecting Overlays">Selecting Overlays</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#task_Setting Display Attributes">Setting Display Attributes</a></span></li>
@@ -138,6 +144,8 @@
 
 
 <li role="treeitem" class="children"><span class="disclosure"></span><span class="sectionName"><a href="#properties">Properties</a></span><ul>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/action">action</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/allowsCreatingOverlays">allowsCreatingOverlays</a></span></li>
 	
@@ -153,6 +161,10 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/allowsOverlaySelection">allowsOverlaySelection</a></span></li>
 	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/clickedOverlay">clickedOverlay</a></span></li>
+	
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/doubleAction">doubleAction</a></span></li>
+	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayBorderColor">overlayBorderColor</a></span></li>
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlayBorderWidth">overlayBorderWidth</a></span></li>
@@ -167,11 +179,9 @@
 	
 	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/overlaySelectionFillColor">overlaySelectionFillColor</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/wantsOverlayDoubleClickActions">wantsOverlayDoubleClickActions</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/rightAction">rightAction</a></span></li>
 	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/wantsOverlayRightClickActions">wantsOverlayRightClickActions</a></span></li>
-	
-	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/wantsOverlaySingleClickActions">wantsOverlaySingleClickActions</a></span></li>
+	<li><span class="nodisclosure"></span><span class="sectionName"><a href="#//api/name/target">target</a></span></li>
 	
 </ul></li>
 
@@ -308,6 +318,52 @@ visible cells and draw the new values.</p></span>
 		<span class="tooltip"><p>Attempt to enter new state.</p></span>
 	</span>
 	
+	
+</li>
+						</ul>
+						
+						
+						<a title="Target-action Behavior" name="task_Target-action Behavior"></a>
+						<h3 class="subsubtitle task-title">Target-action Behavior</h3>
+
+						<ul class="task-list">
+							<li>
+	<span class="tooltip">
+		<code><a href="#//api/name/target">&nbsp;&nbsp;target</a></code>
+		<span class="tooltip"><p>Specifies the <a href="#//api/name/target">target</a> object to receive <a href="#//api/name/action">action</a> messages from the receiver.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/action">&nbsp;&nbsp;action</a></code>
+		<span class="tooltip"><p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user single-clicks
+an overlay.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/doubleAction">&nbsp;&nbsp;doubleAction</a></code>
+		<span class="tooltip"><p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user double-clicks
+an overlay.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/rightAction">&nbsp;&nbsp;rightAction</a></code>
+		<span class="tooltip"><p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user right-clicks
+an overlay.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
+	
+</li><li>
+	<span class="tooltip">
+		<code><a href="#//api/name/clickedOverlay">&nbsp;&nbsp;clickedOverlay</a></code>
+		<span class="tooltip"><p>Specifies the index of the overlay the user clicked to trigger an <a href="#//api/name/action">action</a> message.</p></span>
+	</span>
+	<span class="task-item-suffix">property</span>
 	
 </li>
 						</ul>
@@ -458,27 +514,6 @@ prior to this one effectively becomes the last selected overlay.</p></span>
 	
 </li><li>
 	<span class="tooltip">
-		<code><a href="#//api/name/wantsOverlaySingleClickActions">&nbsp;&nbsp;wantsOverlaySingleClickActions</a></code>
-		<span class="tooltip"><p>Specifies whether receiver should send single-clicks to its overlay delegate.</p></span>
-	</span>
-	<span class="task-item-suffix">property</span>
-	
-</li><li>
-	<span class="tooltip">
-		<code><a href="#//api/name/wantsOverlayDoubleClickActions">&nbsp;&nbsp;wantsOverlayDoubleClickActions</a></code>
-		<span class="tooltip"><p>Specifies whether receiver should send double-clicks to its overlay delegate.</p></span>
-	</span>
-	<span class="task-item-suffix">property</span>
-	
-</li><li>
-	<span class="tooltip">
-		<code><a href="#//api/name/wantsOverlayRightClickActions">&nbsp;&nbsp;wantsOverlayRightClickActions</a></code>
-		<span class="tooltip"><p>Specifies whether receiver should send right-clicks to its overlay delegate.</p></span>
-	</span>
-	<span class="task-item-suffix">property</span>
-	
-</li><li>
-	<span class="tooltip">
 		<code><a href="#//api/name/allowsOverlaySelection">&nbsp;&nbsp;allowsOverlaySelection</a></code>
 		<span class="tooltip"><p>Specifies whether receiver should allow overlay selection.</p></span>
 	</span>
@@ -510,6 +545,62 @@ prior to this one effectively becomes the last selected overlay.</p></span>
 					<div class="section section-methods">
 						<a title="Properties" name="properties"></a>
 						<h2 class="subtitle subtitle-methods">Properties</h2>
+						
+						<div class="section-method">
+	<a name="//api/name/action" title="action"></a>
+	<h3 class="subsubtitle method-title">action</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user single-clicks
+an overlay.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property SEL action</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user single-clicks
+an overlay.</p>
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection see-also-section">
+		<h4 class="method-subtitle">See Also</h4>
+		<ul>
+			
+			<li><code><p><a href="#//api/name/target">@property target</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/doubleAction">@property doubleAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/rightAction">@property rightAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/clickedOverlay">@property clickedOverlay</a></p></code></li>
+			
+		</ul>
+	</div>
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">MEOverlayView.h</code><br />
+	</div>				
+	
+	
+</div>
 						
 						<div class="section-method">
 	<a name="//api/name/allowsCreatingOverlays" title="allowsCreatingOverlays"></a>
@@ -799,6 +890,116 @@ prior to this one effectively becomes the last selected overlay.</p></span>
 </div>
 						
 						<div class="section-method">
+	<a name="//api/name/clickedOverlay" title="clickedOverlay"></a>
+	<h3 class="subsubtitle method-title">clickedOverlay</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Specifies the index of the overlay the user clicked to trigger an <a href="#//api/name/action">action</a> message.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property (readonly) NSInteger clickedOverlay</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Specifies the index of the overlay the user clicked to trigger an <a href="#//api/name/action">action</a> message.</p>
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection see-also-section">
+		<h4 class="method-subtitle">See Also</h4>
+		<ul>
+			
+			<li><code><p><a href="#//api/name/target">@property target</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/action">@property action</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/doubleAction">@property doubleAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/rightAction">@property rightAction</a></p></code></li>
+			
+		</ul>
+	</div>
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">MEOverlayView.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
+	<a name="//api/name/doubleAction" title="doubleAction"></a>
+	<h3 class="subsubtitle method-title">doubleAction</h3>
+	
+	
+	
+	<div class="method-subsection brief-description">
+		<p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user double-clicks
+an overlay.</p>
+	</div>		
+	
+	
+	<div class="method-subsection method-declaration"><code>@property SEL doubleAction</code></div>
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="method-subsection discussion-section">
+		<h4 class="method-subtitle">Discussion</h4>
+		<p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user double-clicks
+an overlay.</p>
+	</div>
+	
+	
+	
+	
+	
+	<div class="method-subsection see-also-section">
+		<h4 class="method-subtitle">See Also</h4>
+		<ul>
+			
+			<li><code><p><a href="#//api/name/target">@property target</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/action">@property action</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/rightAction">@property rightAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/clickedOverlay">@property clickedOverlay</a></p></code></li>
+			
+		</ul>
+	</div>
+	
+	
+	
+	<div class="method-subsection declared-in-section">
+		<h4 class="method-subtitle">Declared In</h4>
+		<code class="declared-in-ref">MEOverlayView.h</code><br />
+	</div>				
+	
+	
+</div>
+						
+						<div class="section-method">
 	<a name="//api/name/overlayBorderColor" title="overlayBorderColor"></a>
 	<h3 class="subsubtitle method-title">overlayBorderColor</h3>
 	
@@ -914,6 +1115,15 @@ data source.</p>
 	
 	
 	
+	<div class="method-subsection see-also-section">
+		<h4 class="method-subtitle">See Also</h4>
+		<ul>
+			
+			<li><code><p><a href="../Categories/NSObject+MEOverlayViewDataSource.html">NSObject(MEOverlayViewDataSource)</a></p></code></li>
+			
+		</ul>
+	</div>
+	
 	
 	
 	<div class="method-subsection declared-in-section">
@@ -992,7 +1202,7 @@ delegate.</p>
 		<h4 class="method-subtitle">Discussion</h4>
 		<p>The color used to fill an overlay.</p>
 
-<p>Defaults to transparent blue`.</p>
+<p>Defaults to transparent blue.</p>
 	</div>
 	
 	
@@ -1092,17 +1302,18 @@ delegate.</p>
 </div>
 						
 						<div class="section-method">
-	<a name="//api/name/wantsOverlayDoubleClickActions" title="wantsOverlayDoubleClickActions"></a>
-	<h3 class="subsubtitle method-title">wantsOverlayDoubleClickActions</h3>
+	<a name="//api/name/rightAction" title="rightAction"></a>
+	<h3 class="subsubtitle method-title">rightAction</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Specifies whether receiver should send double-clicks to its overlay delegate.</p>
+		<p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user right-clicks
+an overlay.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property BOOL wantsOverlayDoubleClickActions</code></div>
+	<div class="method-subsection method-declaration"><code>@property SEL rightAction</code></div>
 	
 	
 	
@@ -1113,14 +1324,28 @@ delegate.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Specifies whether receiver should send double-clicks to its overlay delegate.</p>
-
-<p>Defaults to <code>YES</code>.</p>
+		<p>Specifies the message selector sent to the <a href="#//api/name/target">target</a> when the user right-clicks
+an overlay.</p>
 	</div>
 	
 	
 	
 	
+	
+	<div class="method-subsection see-also-section">
+		<h4 class="method-subtitle">See Also</h4>
+		<ul>
+			
+			<li><code><p><a href="#//api/name/target">@property target</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/action">@property action</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/doubleAction">@property doubleAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/clickedOverlay">@property clickedOverlay</a></p></code></li>
+			
+		</ul>
+	</div>
 	
 	
 	
@@ -1133,17 +1358,17 @@ delegate.</p>
 </div>
 						
 						<div class="section-method">
-	<a name="//api/name/wantsOverlayRightClickActions" title="wantsOverlayRightClickActions"></a>
-	<h3 class="subsubtitle method-title">wantsOverlayRightClickActions</h3>
+	<a name="//api/name/target" title="target"></a>
+	<h3 class="subsubtitle method-title">target</h3>
 	
 	
 	
 	<div class="method-subsection brief-description">
-		<p>Specifies whether receiver should send right-clicks to its overlay delegate.</p>
+		<p>Specifies the <a href="#//api/name/target">target</a> object to receive <a href="#//api/name/action">action</a> messages from the receiver.</p>
 	</div>		
 	
 	
-	<div class="method-subsection method-declaration"><code>@property BOOL wantsOverlayRightClickActions</code></div>
+	<div class="method-subsection method-declaration"><code>@property (weak) IBOutlet id target</code></div>
 	
 	
 	
@@ -1154,55 +1379,30 @@ delegate.</p>
 	
 	<div class="method-subsection discussion-section">
 		<h4 class="method-subtitle">Discussion</h4>
-		<p>Specifies whether receiver should send right-clicks to its overlay delegate.</p>
+		<p>Specifies the <a href="#//api/name/target">target</a> object to receive <a href="#//api/name/action">action</a> messages from the receiver.</p>
 
-<p>Defaults to <code>YES</code>.</p>
+<p>In a managed memory environment, the receiver maintains a weak reference to the
+<a href="#//api/name/target">target</a>.</p>
 	</div>
 	
 	
 	
 	
 	
-	
-	
-	<div class="method-subsection declared-in-section">
-		<h4 class="method-subtitle">Declared In</h4>
-		<code class="declared-in-ref">MEOverlayView.h</code><br />
-	</div>				
-	
-	
-</div>
-						
-						<div class="section-method">
-	<a name="//api/name/wantsOverlaySingleClickActions" title="wantsOverlaySingleClickActions"></a>
-	<h3 class="subsubtitle method-title">wantsOverlaySingleClickActions</h3>
-	
-	
-	
-	<div class="method-subsection brief-description">
-		<p>Specifies whether receiver should send single-clicks to its overlay delegate.</p>
-	</div>		
-	
-	
-	<div class="method-subsection method-declaration"><code>@property BOOL wantsOverlaySingleClickActions</code></div>
-	
-	
-	
-	
-	
-	
-	
-	
-	<div class="method-subsection discussion-section">
-		<h4 class="method-subtitle">Discussion</h4>
-		<p>Specifies whether receiver should send single-clicks to its overlay delegate.</p>
-
-<p>Defaults to <code>YES</code>.</p>
+	<div class="method-subsection see-also-section">
+		<h4 class="method-subtitle">See Also</h4>
+		<ul>
+			
+			<li><code><p><a href="#//api/name/action">@property action</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/doubleAction">@property doubleAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/rightAction">@property rightAction</a></p></code></li>
+			
+			<li><code><p><a href="#//api/name/clickedOverlay">@property clickedOverlay</a></p></code></li>
+			
+		</ul>
 	</div>
-	
-	
-	
-	
 	
 	
 	
