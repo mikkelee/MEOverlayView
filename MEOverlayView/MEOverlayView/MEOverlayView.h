@@ -238,6 +238,25 @@ typedef NSUInteger MEState;
 /// ---------------------------------
 /// @name Selecting Overlays
 /// ---------------------------------
+
+/** Specifies whether receiver should allow overlay selection.
+ 
+ Defaults to `YES`.
+ */
+@property BOOL allowsOverlaySelection;
+
+/** Specifies whether receiver should allow empty overlay selections.
+ 
+ Defaults to `YES`.
+ */
+@property BOOL allowsEmptyOverlaySelection;
+
+/** Specifies whether receiver should allow multiple overlay selection.
+ 
+ Defaults to `YES`.
+ */
+@property BOOL allowsMultipleOverlaySelection;
+
 /** Sets the overlay selection using _indexes_ possibly extending the selection.
  
  @param indexes The indexes to select.
@@ -355,24 +374,6 @@ typedef NSUInteger MEState;
  Defaults to `NO`.
  */
 @property BOOL allowsOverlappingOverlays;
-
-/** Specifies whether receiver should allow overlay selection.
- 
- Defaults to `YES`.
- */
-@property BOOL allowsOverlaySelection;
-
-/** Specifies whether receiver should allow empty overlay selections.
- 
- Defaults to `YES`.
- */
-@property BOOL allowsEmptyOverlaySelection;
-
-/** Specifies whether receiver should allow multiple overlay selection.
- 
- Defaults to `YES`.
- */
-@property BOOL allowsMultipleOverlaySelection;
 
 @end
 

@@ -292,7 +292,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/appledoc --project-name $PROJECT_NAME --project-company \"Mikkel Eide Eriksen\" --company-id dk.kildekort --output $SOURCE_ROOT/Documentation --logformat Xcode --keep-intermediate-files MEOverlayView/MEOverlayView/\ncp -Rpv $SOURCE_ROOT/Documentation/html/* $SOURCE_ROOT/../Pages/";
+			shellScript = "/usr/local/bin/appledoc --project-name $PROJECT_NAME --project-company \"Mikkel Eide Eriksen\" --company-id dk.kildekort --output $SOURCE_ROOT/Documentation --logformat Xcode --keep-intermediate-files MEOverlayView/MEOverlayView/\ncp -Rpv $SOURCE_ROOT/Documentation/html/* $SOURCE_ROOT/../Pages/\ncd $SOURCE_ROOT/../Pages/\ngit commit -a -m \"Updated docs\"\ncd -";
 		};
 /* End PBXShellScriptBuildPhase section */
 
