@@ -354,15 +354,16 @@ typedef NSUInteger MECorner;
         if ([self allowsOverlaySelection]) {
             NSUInteger layerNumber = [[hitLayer valueForKey:@"MEOverlayNumber"] integerValue];
             DLog(@"checking select with %lu", layerNumber);
+            BOOL multiAttempt = ([theEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask) == NSShiftKeyMask || ([theEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask) == NSCommandKeyMask;
             if ([self isOverlaySelected:layerNumber]) {
-                if ([self numberOfSelectedOverlays] > 1 || [self allowsEmptyOverlaySelection]) {
+                if (multiAttempt && ([self numberOfSelectedOverlays] > 1 || [self allowsEmptyOverlaySelection])) {
                     DLog(@"deselected");
                     [self deselectOverlay:layerNumber];
                     [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
                 }
             } else {
                 [self selectOverlayIndexes:[NSIndexSet indexSetWithIndex:layerNumber] 
-                      byExtendingSelection:[self allowsMultipleOverlaySelection]];
+                      byExtendingSelection:(multiAttempt && [self allowsMultipleOverlaySelection])];
                 [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
             }
             DLog(@"current selection: %@", __ME_selectedOverlays);
@@ -495,6 +496,14 @@ typedef NSUInteger MECorner;
     }
     
     [super keyUp:theEvent];
+}
+
+#pragma mark Other events
+
+- (void)selectAll:(id)sender
+{
+    [self selectAllOverlays:sender];
+    [self drawOverlays];
 }
 
 #pragma mark Helpers

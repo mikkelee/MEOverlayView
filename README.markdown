@@ -10,7 +10,7 @@ The delegate is in turn told when an overlay was created/modified/deleted, depen
 
 I've attempted to make it as generic & reusable as possible, modelling the method names & flow after NSTableView. Hopefully it should be possible to "jump right in" if you're familiar with Cocoa conventions.
 
-To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see below).
+To use in your own app, you only need the MEOverlayView.h/.m files (and to link to the Quartz.framework). Set the overlayDataSource and optionally the overlayDelegate and implement the selectors from the informal protocols (see docs).
 
 Build & run MEOverlayView.app for an example of the functionality. In the example, the data source and delegate are the same object, but that is not necessary; as long as they have access to the same set of objects, all should work fine. Try changing the delegate setup in MEOverlayController's awakeFromNib to see different behaviors.
 
@@ -26,13 +26,21 @@ All coordinates are in the image's coordinate system (except those in the NSEven
 
 * More notifications.
 
+* Easier access of selected objects (?)
+
+* Embed in scroll view, check if works properly with zoom etc.
+
+## Misc ##
+
 * Add @see keywords in the various sections.
 
 * Docs for MEOverlayState and notifications
 
 * Go through docs with a fine comb and make sure that described behavior is correct.
 
-## Bugs ##
+# Bugs #
+
+## Major ##
 
 * Keyboard selection: In some cases, objects can't be reached.
 
@@ -48,5 +56,4 @@ All coordinates are in the image's coordinate system (except those in the NSEven
 
 -----------------------------------------------------------------------------------------------
 
-Pic of cabbage is from:
-* http://www.freestockimages.org/wp-content/uploads/2009/06/royalty-free-food-image-cabbage.jpg
+Pic of cabbage is from http://www.freestockimages.org/wp-content/uploads/2009/06/royalty-free-food-image-cabbage.jpg
