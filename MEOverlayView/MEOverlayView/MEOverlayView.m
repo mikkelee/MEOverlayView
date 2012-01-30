@@ -274,9 +274,14 @@ typedef NSUInteger MECorner;
     }
 }
 
-- (NSInteger)selectedOverlay
+- (NSInteger)selectedOverlayIndex
 {
-    return [__ME_selectedOverlays count]-1;
+    NSIndexSet *selected = [self selectedOverlayIndexes];
+    if ([selected count] >= 1) {
+        return [selected lastIndex];
+    } else {
+        return -1;
+    }
 }
 
 - (NSIndexSet *)selectedOverlayIndexes

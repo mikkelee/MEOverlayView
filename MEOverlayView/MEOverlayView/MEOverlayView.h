@@ -41,8 +41,6 @@
 
 /** Invoked by the overlay view to return the data object associated with the specified index.
  
- overlayView:overlayObjectAtIndex: is called ..., so it must be efficient.
- 
  @param anOverlayView The overlay view that sent the message.
  @param num The overlay view that sent the message.
  @return An item in the data source at the specified index of the view. Must respond to -(NSRect)rect
@@ -69,8 +67,7 @@
 
 /** Invoked by the overlay view when the user has created a new overlay.
  
- The delegate should create an object and expect to return it to the overlay when
- asked.
+ The delegate should create an object and expect to return it to the overlay when asked.
  
  @param anOverlayView The overlay view that sent the message.
  @param rect The frame for the new overlay, expressed in the coordinate system of the image.
@@ -79,21 +76,24 @@
 
 /** Invoked by the overlay view when the user has modified an overlay.
  
- The delegate should change the frame of the rect. Alternately, the new frame can be 
- discarded if the frame is not satisfactory.
+ The delegate should change the frame of the stored rect. Alternately, the new frame can be discarded if the frame is not satisfactory due to some constraint defined in the data source.
  
  @param anOverlayView The overlay view that sent the message.
  @param overlayObject The object that was modified.
  @param rect The new frame for the overlay, expressed in the coordinate system of the image.
+ 
+ @see overlayView:didDeleteOverlay:
  */
 - (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
 
 /** Invoked by the overlay view when the user has deleted an overlay.
  
- The delegate should delete...
+ The data source should delete the object in its storage. To prevent deletion, see [MEOverlayView allowsDeletingOverlays]. Alternately, the data source may choose not to delete the object based on some internal criteria.
  
  @param anOverlayView The overlay view that sent the message.
  @param overlayObject The object that was deleted.
+ 
+ @see overlayView:didModifyOverlay:newRect:
  */
 - (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
 
@@ -147,7 +147,7 @@ typedef NSUInteger MEState;
  In a managed memory environment, the receiver maintains a weak reference to the 
  data source.
  
- Setting the delegate will implicitly reload the overlay view.
+ Setting the data source will implicitly reload the overlay view.
  
  @see NSObject(MEOverlayViewDataSource)
  */
@@ -173,7 +173,7 @@ typedef NSUInteger MEState;
 /** Marks the receiver as needing redisplay, so it will reload the data for 
  visible cells and draw the new values.
  
- This method forces redraw of all the visible cells in the receiver. 
+ This method forces redraw of all overlays in the receiver. 
  */
 - (void)reloadData;
 
@@ -268,7 +268,7 @@ typedef NSUInteger MEState;
  
  @return The index of the last overlay selected or added to the selection, or –1 if no overlay is selected.
  */
-- (NSInteger)selectedOverlay;
+- (NSInteger)selectedOverlayIndex;
 
 /** Returns an index set containing the indexes of the selected overlays.
  
