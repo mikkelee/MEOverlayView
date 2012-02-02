@@ -24,17 +24,15 @@ All coordinates are in the image's coordinate system (except those in the NSEven
 
 ## Features to add ##
 
+* Clearer separatation of delegate/data source.
+
 * More notifications.
 
-* Easier access of selected objects (?)
-
-* Embed in scroll view, check if works properly with zoom etc.
+* Easier access of selected objects; not just indexes.
 
 ## Misc ##
 
-* Add @see keywords in the various sections.
-
-* Docs for MEOverlayState and notifications
+* Docs for MEOverlayState and notifications when AppleDoc supports it.
 
 * Go through docs with a fine comb and make sure that described behavior is correct.
 

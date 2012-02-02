@@ -12,6 +12,5 @@
 @interface MEAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
-@property (assign) IBOutlet MEOverlayView *overlayView;
 
 @end

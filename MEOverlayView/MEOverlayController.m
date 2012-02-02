@@ -37,12 +37,27 @@
 
 - (void)awakeFromNib
 {
-    //some examples -- try changing them to see how they work.
     
-    [overlayView setOverlayFillColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f)];
-    [overlayView setOverlayBorderColor:CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f)];
-    [overlayView setOverlaySelectionFillColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f)];
-    [overlayView setOverlaySelectionBorderColor:CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 1.0f)];
+    //some examples -- try changing them to see how they work.
+    NSString *imgURL = [[NSBundle mainBundle] pathForImageResource:@"royalty-free-food-image-cabbage.jpg"];
+    [overlayView setImageWithURL:[NSURL fileURLWithPath:imgURL]];
+    
+    CGColorRef ofColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 0.5f);
+    [overlayView setOverlayFillColor:ofColor];
+    CGColorRelease(ofColor);
+    
+    CGColorRef obColor = CGColorCreateGenericRGB(0.0f, 0.0f, 1.0f, 1.0f);
+    [overlayView setOverlayBorderColor:obColor];
+    CGColorRelease(obColor);
+    
+    CGColorRef osfColor = CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 0.5f);
+    [overlayView setOverlaySelectionFillColor:osfColor];
+    CGColorRelease(osfColor);
+    
+    CGColorRef osbColor = CGColorCreateGenericRGB(1.0f, 0.0f, 0.0f, 1.0f);
+    [overlayView setOverlaySelectionBorderColor:osbColor];
+    CGColorRelease(osbColor);
+    
     [overlayView setOverlayBorderWidth:3.0f];
     
     [overlayView setAllowsCreatingOverlays:YES];

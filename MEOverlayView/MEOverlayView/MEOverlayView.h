@@ -48,6 +48,21 @@
  */
 - (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
 
+
+/// ---------------------------------
+/// @name Events
+/// ---------------------------------
+
+/** Informs the delegate that the overlay view’s selection has changed.
+ 
+ @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
+ */
+- (void)overlayDidMove:(NSNotification *)aNotification;
+
+- (void)overlayDidResize:(NSNotification *)aNotification;
+
+- (void)overlayDidDelete:(NSNotification *)aNotification;
+
 @end 
 
 #pragma mark -
@@ -107,14 +122,6 @@
  @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
  */
 - (void)overlaySelectionDidChange:(NSNotification *)aNotification;
-
-
-- (void)overlayDidMove:(NSNotification *)aNotification;
-
-- (void)overlayDidResize:(NSNotification *)aNotification;
-
-- (void)overlayDidDelete:(NSNotification *)aNotification;
-
 
 @end
 
@@ -321,31 +328,31 @@ typedef NSUInteger MEState;
  
  Defaults to transparent blue.
  */
-@property (assign) CGColorRef overlayFillColor;
+@property CGColorRef overlayFillColor;
 
 /** The color used for the border of an overlay.
  
  Defaults to opaque blue.
  */
-@property (assign) CGColorRef overlayBorderColor;
+@property CGColorRef overlayBorderColor;
 
 /** The color used to fill a selected overlay.
  
  Defaults to transparent green.
  */
-@property (assign) CGColorRef overlaySelectionFillColor;
+@property CGColorRef overlaySelectionFillColor;
 
 /** The color used for the border of a selected overlay.
  
  Defaults to opaque green.
  */
-@property (assign) CGColorRef overlaySelectionBorderColor;
+@property CGColorRef overlaySelectionBorderColor;
 
 /** Specifies the border width of an overlay.
  
  Defaults to 3 points.
  */
-@property (assign) CGFloat overlayBorderWidth;
+@property CGFloat overlayBorderWidth;
 
 /// ---------------------------------
 /// @name Configuring Behavior
@@ -369,7 +376,7 @@ typedef NSUInteger MEState;
  */
 @property BOOL allowsDeletingOverlays;
 
-/** Specifies whether receiver should allow overlapping overlays.
+/** Specifies whether receiver should allow overlapping overlays. This will affect creating, moving, and resizing overlays.
  
  Defaults to `NO`.
  */
@@ -385,3 +392,6 @@ typedef NSUInteger MEState;
  a userInfo dictionary.
  */
 extern NSString *MEOverlayViewSelectionDidChangeNotification;
+extern NSString *MEOverlayViewOverlayDidMoveNotification;
+extern NSString *MEOverlayViewOverlayDidResizeNotification;
+extern NSString *MEOverlayViewOverlayDidDeleteNotification;

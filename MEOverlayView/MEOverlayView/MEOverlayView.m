@@ -242,6 +242,8 @@ typedef NSUInteger MECorner;
     
     CFRelease(__ME_overlayFillColor);
     CFRelease(__ME_overlayBorderColor);
+    CFRelease(__ME_overlaySelectionFillColor);
+    CFRelease(__ME_overlaySelectionBorderColor);
 }
 
 #pragma mark State
@@ -267,11 +269,15 @@ typedef NSUInteger MECorner;
 
 - (void)selectOverlayIndexes:(NSIndexSet *)indexes byExtendingSelection:(BOOL)extend
 {
+    if ([indexes count] == 0) {
+        return;
+    }
     if (extend) {
         [__ME_selectedOverlays addObjectsFromArray:[__ME_overlayCache objectsAtIndexes:indexes]];
     } else {
         __ME_selectedOverlays = [[__ME_overlayCache objectsAtIndexes:indexes] mutableCopy];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
 }
 
 - (NSInteger)selectedOverlayIndex
@@ -294,6 +300,7 @@ typedef NSUInteger MECorner;
 - (void)deselectOverlay:(NSInteger)overlayIndex
 {
     [__ME_selectedOverlays removeObject:[__ME_overlayCache objectAtIndex:overlayIndex]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
 }
 
 - (NSInteger)numberOfSelectedOverlays
@@ -309,11 +316,13 @@ typedef NSUInteger MECorner;
 - (IBAction)selectAllOverlays:(id)sender
 {
     __ME_selectedOverlays = [__ME_overlayCache mutableCopy];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
 }
 
 - (IBAction)deselectAllOverlays:(id)sender
 {
     __ME_selectedOverlays = [NSMutableArray arrayWithCapacity:2];
+    [[NSNotificationCenter defaultCenter] postNotificationName:MEOverlayViewSelectionDidChangeNotification object:self];
 }
 
 #pragma mark Mouse events
@@ -818,9 +827,20 @@ typedef NSUInteger MECorner;
 
 - (void)setOverlayDelegate:(id)overlayDelegate
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:__ME_overlayDelegate
-                                                    name:MEOverlayViewSelectionDidChangeNotification
-                                                  object:self];
+    if (__ME_overlayDelegate != nil) {
+        [[NSNotificationCenter defaultCenter] removeObserver:__ME_overlayDelegate
+                                                        name:MEOverlayViewSelectionDidChangeNotification
+                                                      object:self];
+        [[NSNotificationCenter defaultCenter] removeObserver:__ME_overlayDelegate
+                                                        name:MEOverlayViewOverlayDidMoveNotification
+                                                      object:self];
+        [[NSNotificationCenter defaultCenter] removeObserver:__ME_overlayDelegate
+                                                        name:MEOverlayViewOverlayDidResizeNotification
+                                                      object:self];
+        [[NSNotificationCenter defaultCenter] removeObserver:__ME_overlayDelegate
+                                                        name:MEOverlayViewOverlayDidDeleteNotification
+                                                      object:self];
+    }
     
     __ME_overlayDelegate = overlayDelegate;
     
@@ -833,10 +853,63 @@ typedef NSUInteger MECorner;
     [self reloadData];
 }
 
-@synthesize overlayFillColor = __ME_overlayFillColor;
-@synthesize overlayBorderColor = __ME_overlayBorderColor;
-@synthesize overlaySelectionFillColor = __ME_overlaySelectionFillColor;
-@synthesize overlaySelectionBorderColor = __ME_overlaySelectionBorderColor;
+//@synthesize overlayFillColor = __ME_overlayFillColor;
+
+- (void)setOverlayFillColor:(CGColorRef)overlayFillColor
+{
+    CGColorRelease(__ME_overlayFillColor);
+    __ME_overlayFillColor = overlayFillColor;
+    CGColorRetain(__ME_overlayFillColor);
+}
+
+- (CGColorRef)overlayFillColor
+{
+    return __ME_overlayFillColor;
+}
+
+//@synthesize overlayBorderColor = __ME_overlayBorderColor;
+
+- (void)setOverlayBorderColor:(CGColorRef)overlayBorderColor
+{
+    CGColorRelease(__ME_overlayBorderColor);
+    __ME_overlayBorderColor = overlayBorderColor;
+    CGColorRetain(__ME_overlayBorderColor);
+}
+
+- (CGColorRef)overlayBorderColor
+{
+    return __ME_overlayBorderColor;
+}
+
+//@synthesize overlaySelectionFillColor = __ME_overlaySelectionFillColor;
+
+- (void)setOverlaySelectionFillColor:(CGColorRef)overlaySelectionFillColor
+{
+    CGColorRelease(__ME_overlaySelectionFillColor);
+    __ME_overlaySelectionFillColor = overlaySelectionFillColor;
+    CGColorRetain(__ME_overlaySelectionFillColor);
+}
+
+- (CGColorRef)overlaySelectionFillColor
+{
+    return __ME_overlaySelectionFillColor;
+}
+
+//@synthesize overlaySelectionBorderColor = __ME_overlaySelectionBorderColor;
+
+- (void)setOverlaySelectionBorderColor:(CGColorRef)overlaySelectionBorderColor
+{
+    CGColorRelease(__ME_overlaySelectionBorderColor);
+    __ME_overlaySelectionBorderColor = overlaySelectionBorderColor;
+    CGColorRetain(__ME_overlaySelectionBorderColor);
+}
+
+- (CGColorRef)overlaySelectionBorderColor
+{
+    return __ME_overlaySelectionBorderColor;
+}
+
+
 @synthesize overlayBorderWidth = __ME_overlayBorderWidth;
 
 @synthesize allowsCreatingOverlays = __ME_allowsCreatingOverlays;
@@ -859,3 +932,6 @@ typedef NSUInteger MECorner;
 #pragma mark Notifications
 
 NSString *MEOverlayViewSelectionDidChangeNotification = @"MEOverlayViewSelectionDidChangeNotification";
+NSString *MEOverlayViewOverlayDidMoveNotification = @"MEOverlayViewOverlayDidMoveNotification";
+NSString *MEOverlayViewOverlayDidResizeNotification = @"MEOverlayViewOverlayDidResizeNotification";
+NSString *MEOverlayViewOverlayDidDeleteNotification = @"MEOverlayViewOverlayDidDeleteNotification";
