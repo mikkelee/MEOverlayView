@@ -103,7 +103,7 @@ typedef NSUInteger MECorner;
     NSInvocation *__ME_singleClickInvocation;
     
     //cache
-    NSMutableArray *__ME_overlayCache;
+    id __ME_overlayCache;
     NSMutableArray *__ME_selectedOverlays;
     NSInteger __ME_clickedOverlay;
 }
@@ -140,6 +140,9 @@ typedef NSUInteger MECorner;
         __ME_overlayCache = [NSMutableArray arrayWithCapacity:0];
         __ME_selectedOverlays = [NSMutableArray arrayWithCapacity:0];
         __ME_clickedOverlay = -1;
+        
+        __ME_activeCorner = MENoCorner;
+        
     }
     
     return self;
@@ -150,6 +153,7 @@ typedef NSUInteger MECorner;
     [super awakeFromNib];
     
     DLog(@"overlayDelegate: %@", __ME_overlayDelegate);
+    DLog(@"overlayDataSource: %@", __ME_overlayDataSource);
 
     [self performSelector:@selector(initialSetup) withObject:nil afterDelay:0.0f];
 }
@@ -174,15 +178,17 @@ typedef NSUInteger MECorner;
 
 - (void)reloadData
 {
-    DLog(@"Setting up overlays from overlayDelegate: %@", __ME_overlayDelegate);
-    
-    NSUInteger count = [__ME_overlayDataSource numberOfOverlaysInOverlayView:self];
-    
-    DLog(@"Number of overlays to create: %lu", count);
-    
-    __ME_overlayCache = [NSMutableArray arrayWithCapacity:count];
-    for (NSUInteger i = 0; i < count; i++) {
-        [__ME_overlayCache addObject:[__ME_overlayDataSource overlayView:self overlayObjectAtIndex:i]];
+    if (__ME_overlayDataSource) {
+        DLog(@"Setting up overlays from overlayDataSouce: %@", __ME_overlayDataSource);
+        
+        NSUInteger count = [__ME_overlayDataSource numberOfOverlaysInOverlayView:self];
+        
+        DLog(@"Number of overlays to create: %lu", count);
+        
+        __ME_overlayCache = [NSMutableArray arrayWithCapacity:count];
+        for (NSUInteger i = 0; i < count; i++) {
+            [__ME_overlayCache addObject:[__ME_overlayDataSource overlayView:self overlayObjectAtIndex:i]];
+        }
     }
     
     [self drawOverlays];
@@ -192,7 +198,11 @@ typedef NSUInteger MECorner;
 {
     DLog(@"start");
     if (![self allowsEmptyOverlaySelection] && [__ME_selectedOverlays count] == 0 && [__ME_overlayCache count] > 0) {
-        __ME_selectedOverlays = [NSMutableArray arrayWithObject:[__ME_overlayCache lastObject]];
+        if ([__ME_overlayCache respondsToSelector:@selector(lastObject)]) {
+            __ME_selectedOverlays = [NSMutableArray arrayWithObject:[__ME_overlayCache lastObject]];
+        } else {
+            __ME_selectedOverlays = [NSMutableArray arrayWithObject:[__ME_overlayCache anyObject]];
+        }
     }
     
     [__ME_topLayer setSublayers:[NSArray array]];
@@ -295,6 +305,11 @@ typedef NSUInteger MECorner;
     return [__ME_overlayCache indexesOfObjectsPassingTest:^(id overlayObject, NSUInteger i, BOOL *stop){
         return [__ME_selectedOverlays containsObject:overlayObject];
     }];
+}
+
+- (NSArray *)selectedOverlays
+{
+    return __ME_selectedOverlays;
 }
 
 - (void)deselectOverlay:(NSInteger)overlayIndex
@@ -926,6 +941,8 @@ typedef NSUInteger MECorner;
 @synthesize doubleAction = __ME_doubleAction;
 @synthesize rightAction = __ME_rightAction;
 @synthesize clickedOverlay = __ME_clickedOverlay;
+
+@synthesize contents = __ME_overlayCache;
 
 @end
 

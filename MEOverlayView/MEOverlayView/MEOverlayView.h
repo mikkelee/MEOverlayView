@@ -8,122 +8,7 @@
 
 #import <Quartz/Quartz.h>
 
-@class MEOverlayView;
-
-#pragma mark -
-#pragma mark Overlay Data Source
-
 //Model this after NSTableView
-
-/** An informal protocol.
- 
- TODO
- 
- See [MEOverlayView overlayDataSource]
- */
-@interface NSObject (MEOverlayViewDataSource)
-
-/// ---------------------------------
-/// @name Required
-/// ---------------------------------
-
-/** Returns the number of overlays managed for anOverlayView by the data source object.
- 
- An instance of MEOverlayView uses this method to determine how many overlays it should create 
- and display. Your numberOfOverlaysInOverlayView: implementation can be called very frequently, 
- so it must be efficient.
-  
- @param anOverlayView The overlay view that sent the message.
- @return The number of overlays in anOverlayView.
- */
-- (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
-
-
-/** Invoked by the overlay view to return the data object associated with the specified index.
- 
- @param anOverlayView The overlay view that sent the message.
- @param num The overlay view that sent the message.
- @return An item in the data source at the specified index of the view. Must respond to -(NSRect)rect
- or -(NSRect)rectValue.
- */
-- (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
-
-
-/// ---------------------------------
-/// @name Events
-/// ---------------------------------
-
-/** Informs the delegate that the overlay view’s selection has changed.
- 
- @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
- */
-- (void)overlayDidMove:(NSNotification *)aNotification;
-
-- (void)overlayDidResize:(NSNotification *)aNotification;
-
-- (void)overlayDidDelete:(NSNotification *)aNotification;
-
-@end 
-
-#pragma mark -
-#pragma mark Overlay Delegate
-
-/** An informal protocol.
- 
- TODO
- 
- See [MEOverlayView overlayDelegate]
- */
-@interface NSObject (MEOverlayViewDelegate)
-
-/// ---------------------------------
-/// @name Changing Overlays
-/// ---------------------------------
-
-/** Invoked by the overlay view when the user has created a new overlay.
- 
- The delegate should create an object and expect to return it to the overlay when asked.
- 
- @param anOverlayView The overlay view that sent the message.
- @param rect The frame for the new overlay, expressed in the coordinate system of the image.
- */
-- (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect;
-
-/** Invoked by the overlay view when the user has modified an overlay.
- 
- The delegate should change the frame of the stored rect. Alternately, the new frame can be discarded if the frame is not satisfactory due to some constraint defined in the data source.
- 
- @param anOverlayView The overlay view that sent the message.
- @param overlayObject The object that was modified.
- @param rect The new frame for the overlay, expressed in the coordinate system of the image.
- 
- @see overlayView:didDeleteOverlay:
- */
-- (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
-
-/** Invoked by the overlay view when the user has deleted an overlay.
- 
- The data source should delete the object in its storage. To prevent deletion, see [MEOverlayView allowsDeletingOverlays]. Alternately, the data source may choose not to delete the object based on some internal criteria.
- 
- @param anOverlayView The overlay view that sent the message.
- @param overlayObject The object that was deleted.
- 
- @see overlayView:didModifyOverlay:newRect:
- */
-- (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
-
-
-/// ---------------------------------
-/// @name Events
-/// ---------------------------------
-
-/** Informs the delegate that the overlay view’s selection has changed.
- 
- @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
- */
-- (void)overlaySelectionDidChange:(NSNotification *)aNotification;
-
-@end
 
 #pragma mark -
 #pragma mark Overlay View
@@ -141,7 +26,15 @@ typedef NSUInteger MEState;
 
 /** The overlay view.
  
- TODO
+ An MEOverlayView object displays a series of overlays for an image.
+ 
+ An overlay view does not store its own data, instead it retrieves data values as needed from a data source to which it has a weak reference. You should not, therefore, try to directly set data values programmatically in the table view; instead you should modify the values in the data source and allow the changes to be reflected in the table view.
+ 
+ See the MEOverlayViewDelegate informal protocol, which declares methods that return views for rows and columns as well as enable selectable cell editing, custom tracking, custom views and cells for individual columns and rows, and selection control. Additional functionality is also available through the use of delegate methods.
+ 
+ See the MEOverlayViewDataSource informal protocol, declares the methods that an NSTableView object uses to provide and access the contents of its data source object.
+ 
+
  */
 @interface MEOverlayView : IKImageView
 
@@ -283,9 +176,15 @@ typedef NSUInteger MEState;
  */
 - (NSIndexSet *)selectedOverlayIndexes;
 
+/** Returns an array containing the selected overlays.
+ 
+ @return An array containing the selected overlays.
+ */
+- (NSArray *)selectedOverlays;
+
 /** Deselects the overlay at overlayIndex if it’s selected, regardless of whether empty selection 
  is allowed.
-  
+ 
  If the indicated overlay was the last overlay selected by the user, the overlay selected
  prior to this one effectively becomes the last selected overlay.
  
@@ -309,7 +208,7 @@ typedef NSUInteger MEState;
 - (BOOL)isOverlaySelected:(NSInteger)overlayIndex;
 
 /** Select all overlays.
-
+ 
  @param sender Typically the object that sent the message.
  */
 - (IBAction)selectAllOverlays:(id)sender;
@@ -382,6 +281,8 @@ typedef NSUInteger MEState;
  */
 @property BOOL allowsOverlappingOverlays;
 
+@property (strong) id contents;
+
 @end
 
 #pragma mark Notifications
@@ -395,3 +296,116 @@ extern NSString *MEOverlayViewSelectionDidChangeNotification;
 extern NSString *MEOverlayViewOverlayDidMoveNotification;
 extern NSString *MEOverlayViewOverlayDidResizeNotification;
 extern NSString *MEOverlayViewOverlayDidDeleteNotification;
+
+#pragma mark -
+#pragma mark Overlay Data Source
+
+/** An informal protocol.
+ 
+ TODO
+ 
+ See [MEOverlayView overlayDataSource]
+ */
+@interface NSObject (MEOverlayViewDataSource)
+
+/// ---------------------------------
+/// @name Required
+/// ---------------------------------
+
+/** Returns the number of overlays managed for anOverlayView by the data source object.
+ 
+ An instance of MEOverlayView uses this method to determine how many overlays it should create 
+ and display. Your numberOfOverlaysInOverlayView: implementation can be called very frequently, 
+ so it must be efficient.
+  
+ @param anOverlayView The overlay view that sent the message.
+ @return The number of overlays in anOverlayView.
+ */
+- (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView;
+
+
+/** Invoked by the overlay view to return the data object associated with the specified index.
+ 
+ @param anOverlayView The overlay view that sent the message.
+ @param num The overlay view that sent the message.
+ @return An item in the data source at the specified index of the view. Must respond to -(NSRect)rect
+ or -(NSRect)rectValue.
+ */
+- (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num; 
+
+@end 
+
+#pragma mark -
+#pragma mark Overlay Delegate
+
+/** An informal protocol.
+ 
+ TODO
+ 
+ See [MEOverlayView overlayDelegate]
+ */
+@interface NSObject (MEOverlayViewDelegate)
+
+
+/// ---------------------------------
+/// @name Events
+/// ---------------------------------
+
+/** Informs the delegate that the overlay view’s selection has changed.
+ 
+ @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
+ */
+- (void)overlayDidMove:(NSNotification *)aNotification;
+
+- (void)overlayDidResize:(NSNotification *)aNotification;
+
+- (void)overlayDidDelete:(NSNotification *)aNotification;
+
+/// ---------------------------------
+/// @name Changing Overlays
+/// ---------------------------------
+
+/** Invoked by the overlay view when the user has created a new overlay.
+ 
+ The delegate should create an object and expect to return it to the overlay when asked.
+ 
+ @param anOverlayView The overlay view that sent the message.
+ @param rect The frame for the new overlay, expressed in the coordinate system of the image.
+ */
+- (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect;
+
+/** Invoked by the overlay view when the user has modified an overlay.
+ 
+ The delegate should change the frame of the stored rect. Alternately, the new frame can be discarded if the frame is not satisfactory due to some constraint defined in the data source.
+ 
+ @param anOverlayView The overlay view that sent the message.
+ @param overlayObject The object that was modified.
+ @param rect The new frame for the overlay, expressed in the coordinate system of the image.
+ 
+ @see overlayView:didDeleteOverlay:
+ */
+- (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect;
+
+/** Invoked by the overlay view when the user has deleted an overlay.
+ 
+ The data source should delete the object in its storage. To prevent deletion, see [MEOverlayView allowsDeletingOverlays]. Alternately, the data source may choose not to delete the object based on some internal criteria.
+ 
+ @param anOverlayView The overlay view that sent the message.
+ @param overlayObject The object that was deleted.
+ 
+ @see overlayView:didModifyOverlay:newRect:
+ */
+- (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject;
+
+
+/// ---------------------------------
+/// @name Events
+/// ---------------------------------
+
+/** Informs the delegate that the overlay view’s selection has changed.
+ 
+ @param aNotification A notification named MEOverlayViewSelectionDidChangeNotification.
+ */
+- (void)overlaySelectionDidChange:(NSNotification *)aNotification;
+
+@end

@@ -17,4 +17,6 @@
 - (IBAction)logCurrentOverlays:(id)sender;
 - (IBAction)changeState:(id)sender;
 
+@property (strong) NSMutableArray *overlays;
+
 @end

@@ -10,7 +10,7 @@
 #import "MEOverlayView.h"
 
 @implementation MEOverlayController {
-    NSMutableArray *overlays;
+    NSMutableArray *_overlays;
 }
 
 #pragma mark Initialization
@@ -22,14 +22,14 @@
     if (self) {
         NSUInteger overlayCount = 5;
         
-        overlays = [NSMutableArray arrayWithCapacity:overlayCount];
+        _overlays = [NSMutableArray arrayWithCapacity:overlayCount];
         for (NSUInteger i = 0; i < overlayCount; i++) {
             NSRect rect = NSMakeRect(20.0f + (i * 110.0f), 100.0f + (i * 10.0f), 100.0f, 100.0f + (i * 20.0f));
             
-            [overlays addObject:[NSValue valueWithRect:rect]];
+            [_overlays addObject:[NSValue valueWithRect:rect]];
         }
         
-        NSLog(@"Created rects: %@", overlays);
+        NSLog(@"Created rects: %@", _overlays);
     }
     
     return self;
@@ -73,18 +73,20 @@
     [overlayView setAllowsOverlaySelection:YES];
     [overlayView setAllowsEmptyOverlaySelection:NO];
     [overlayView setAllowsMultipleOverlaySelection:YES];
+    
+    [overlayView bind:@"contents" toObject:self withKeyPath:@"overlays" options:nil];
 }
 
 #pragma mark MEOverlayViewDataSource
 
 - (NSUInteger)numberOfOverlaysInOverlayView:(MEOverlayView *)anOverlayView
 {
-    return [overlays count];
+    return [_overlays count];
 }
 
 - (id)overlayView:(MEOverlayView *)anOverlayView overlayObjectAtIndex:(NSUInteger)num
 {
-    return [overlays objectAtIndex:num];
+    return [_overlays objectAtIndex:num];
 }
 
 #pragma mark MEOverlayViewDelegate
@@ -92,7 +94,7 @@
 - (void)overlayView:(MEOverlayView *)anOverlayView didCreateOverlay:(NSRect)rect
 {
     NSLog(@"overlay created: %@", NSStringFromRect(rect));
-    [overlays addObject:[NSValue valueWithRect:rect]];
+    [_overlays addObject:[NSValue valueWithRect:rect]];
     
     /*
      Do whatever else you feel like here... 
@@ -103,8 +105,8 @@
 - (void)overlayView:(MEOverlayView *)anOverlayView didModifyOverlay:(id)overlayObject newRect:(NSRect)rect
 {
     NSLog(@"overlay %@ got new rectangle %@", overlayObject, NSStringFromRect(rect));
-    [overlays removeObject:overlayObject];
-    [overlays addObject:[NSValue valueWithRect:rect]];
+    [_overlays removeObject:overlayObject];
+    [_overlays addObject:[NSValue valueWithRect:rect]];
     
     /*
      Do whatever else you feel like here... 
@@ -118,7 +120,7 @@
 - (void)overlayView:(MEOverlayView *)anOverlayView didDeleteOverlay:(id)overlayObject
 {
     NSLog(@"overlay %@ deleted", overlayObject);
-    [overlays removeObject:overlayObject];
+    [_overlays removeObject:overlayObject];
     
     /*
      Do whatever else you feel like here... 
@@ -151,12 +153,14 @@
 
 - (IBAction)logCurrentOverlays:(id)sender
 {
-    NSLog(@"overlays: %@", overlays);
+    NSLog(@"overlays: %@", _overlays);
 }
 
 - (IBAction)changeState:(id)sender
 {
     [overlayView enterState:[sender selectedSegment]];
 }
+
+@synthesize overlays = _overlays;
 
 @end
