@@ -48,8 +48,6 @@ All coordinates are in the image's coordinate system (except those in the NSEven
 
 * Tracking Areas/cursorRects: I can't rely entirely on -cursorUpdate: as it's not issued when moving the mouse from a sublayer back out onto the topLayer. Thus I've had to check for -mouseExited: on the sublayers. It works, but at the expense of extra event handling.
 
-* The resize cursors are loaded from hardcoded paths in WebCore.framework since NSCursor apparently doesn't supply these per default. It's not very nice, but I didn't want to add make the view depend on extra files (and presumably everybody has WebCore installed).
-
 * Note that the DLog() statements in the code are only active in a DEBUG build. Look at the top of MEOverlayView.m if the log spam is annoying.
 
 -----------------------------------------------------------------------------------------------
