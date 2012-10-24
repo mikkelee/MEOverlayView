@@ -873,6 +873,19 @@ typedef NSUInteger MECorner;
     return _overlaySelectionBorderColor;
 }
 
+- (void)setOverlayBorderWidth:(CGFloat)overlayBorderWidth
+{
+    _overlayBorderWidth = overlayBorderWidth;
+    _handleWidth = _overlayBorderWidth * 2.0f;
+    _handleOffset = (_overlayBorderWidth / 2.0f) + 1.0f;
+    
+}
+
+- (CGFloat)overlayBorderWidth
+{
+    return _overlayBorderWidth;
+}
+
 @end
 
 #pragma mark Notifications
