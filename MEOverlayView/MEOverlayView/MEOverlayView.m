@@ -45,20 +45,6 @@ typedef NSUInteger MECorner;
     CGColorRef _overlaySelectionBorderColor;
     CGFloat _overlayBorderWidth;
     
-    __weak id _target;
-    SEL _action;
-    SEL _doubleAction;
-    SEL _rightAction;
-    
-    BOOL _allowsCreatingOverlays;
-    BOOL _allowsModifyingOverlays;
-    BOOL _allowsDeletingOverlays;
-    BOOL _allowsOverlappingOverlays;
-    
-    BOOL _allowsOverlaySelection;
-    BOOL _allowsEmptyOverlaySelection;
-    BOOL _allowsMultipleOverlaySelection;
-    
     //internal helper ivars
     CGFloat _handleWidth;
     CGFloat _handleOffset;
