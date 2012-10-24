@@ -80,14 +80,17 @@ typedef NSUInteger MEState;
 /// ---------------------------------
 /// @name Managing State
 /// ---------------------------------
-/** Attempt to enter new state.
+/** Set the state of the view to one of:
  
- Discussion about allowances here.
+ MEIdleState,
+ MECreatingState,
+ MEModifyingState,
+ MEDeletingState
  
- @param theState The state that should be entered.
- @return `YES` if the state could be changed; otherwise `NO`.
+ If the state change was not allowed, no change will be made.
+ 
  */
-- (BOOL)enterState:(MEState)theState;
+@property MEState state;
 
 /// ---------------------------------
 /// @name Target-action Behavior

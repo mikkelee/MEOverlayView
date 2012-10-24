@@ -7,7 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "MEOverlayView.h"
 
 @interface MEAppDelegate : NSObject <NSApplicationDelegate>
 

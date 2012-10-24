@@ -37,7 +37,6 @@
 
 - (void)awakeFromNib
 {
-    
     //some examples -- try changing them to see how they work.
     NSString *imgURL = [[NSBundle mainBundle] pathForImageResource:@"royalty-free-food-image-cabbage.jpg"];
     [overlayView setImageWithURL:[NSURL fileURLWithPath:imgURL]];
@@ -158,7 +157,7 @@
 
 - (IBAction)changeState:(id)sender
 {
-    [overlayView enterState:[sender selectedSegment]];
+    overlayView.state = [sender selectedSegment];
 }
 
 @synthesize overlays = _overlays;

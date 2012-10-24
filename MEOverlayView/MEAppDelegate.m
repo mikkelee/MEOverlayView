@@ -10,12 +10,9 @@
 
 @implementation MEAppDelegate 
 
-@synthesize window = _window;
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     //Blah blah.
 }
-
 
 @end
